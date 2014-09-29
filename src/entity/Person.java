@@ -25,6 +25,18 @@ public class Person implements Serializable {
     @OneToMany
     private List<RoleSchool> roles = new ArrayList<>();
 
+    public List<RoleSchool> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleSchool> roles) {
+        this.roles = roles;
+    }
+    
+    public void addRole(RoleSchool role) {
+        roles.add(role);
+    }
+    
     public Person() {
     }
 
