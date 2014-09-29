@@ -10,6 +10,13 @@
 <project name="Sem3CA2" default="default" basedir=".">
     <description>Builds, tests, and runs the project Sem3CA2.</description>
     <import file="nbproject/build-impl.xml"/>
+    <target name="-post-compile">
+      <copy file="startServer.bat" todir="${dist.dir}"/>
+      <mkdir dir="${dist.dir}/public"/>      
+      <copy todir="${dist.dir}/public">  
+         <fileset dir="src/htmlFiles"/>
+       </copy>
+     </target>
     <!--
 
     There exist several targets which are by default empty and which can be 

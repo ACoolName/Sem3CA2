@@ -1,0 +1,1 @@
+java -cp Sem3CA2.jar server.RestServer 8080 localhost public/
