@@ -9,6 +9,7 @@ import com.sun.net.httpserver.HttpServer;
 import entity.Person;
 import entity.RoleSchool;
 import exceptions.InvalidRequestException;
+import exceptions.InvalidRole;
 import exceptions.NotFoundException;
 import facades.ServerFacadeMock;
 import interfaces.ServerFacade;
@@ -45,7 +46,7 @@ public class RestServer {
         facade = new ServerFacadeMock();
         gson = new Gson();
         server.start();
-        
+
         System.out.println("Server started, listening on port: " + port);
     }
 
@@ -242,6 +243,9 @@ public class RestServer {
                     } catch (NotFoundException ex) {
                         response = ex.getMessage();
                         status = 404;
+                    } catch (InvalidRole ex) {
+                        status = 404;
+                        response = ex.getMessage();
                     }
                     break;
                 case "PUT":
@@ -256,7 +260,7 @@ public class RestServer {
             }
         }
 
-        private String handlePost(HttpExchange he) throws UnsupportedEncodingException, IOException, NotFoundException {
+        private String handlePost(HttpExchange he) throws UnsupportedEncodingException, IOException, NotFoundException, InvalidRole {
             InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
             BufferedReader br = new BufferedReader(isr);
             String jsonQuery = br.readLine();
