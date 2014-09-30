@@ -31,6 +31,7 @@ public class RestServer {
         server.createContext(filesUri, new HandlerFileServer());
 
         server.start();
+        
         System.out.println("Server started, listening on port: " + port);
     }
 
