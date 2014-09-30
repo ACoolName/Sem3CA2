@@ -11,6 +11,7 @@ import entity.RoleSchool;
 import exceptions.InvalidRequestException;
 import exceptions.InvalidRole;
 import exceptions.NotFoundException;
+import facades.ServerFacadeDB;
 import facades.ServerFacadeMock;
 import interfaces.ServerFacade;
 import java.io.BufferedInputStream;
@@ -43,10 +44,10 @@ public class RestServer {
         server.createContext("/role", new HandlerRole());
         //HTTP Server Routes
         server.createContext(filesUri, new HandlerFileServer());
-        facade = new ServerFacadeMock();
+        facade = new ServerFacadeDB();
         gson = new Gson();
         server.start();
-
+        facade.addPerson(gson.toJson(new Person("ddd", "ccc", "dasd", "das")));
         System.out.println("Server started, listening on port: " + port);
     }
 
@@ -114,8 +115,7 @@ public class RestServer {
         }
 
         private String handleGet(HttpExchange he) throws NotFoundException {
-            String response = "";
-
+            String response;
             String path = he.getRequestURI().getPath();
             int lastIndex = path.lastIndexOf("/");
             if (lastIndex > 0) {  //person/id
@@ -126,7 +126,6 @@ public class RestServer {
                 response = facade.getPersons();
             }
             return response;
-
         }
 
         private String handlePost(HttpExchange he) throws UnsupportedEncodingException, IOException {
