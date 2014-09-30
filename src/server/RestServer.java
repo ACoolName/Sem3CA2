@@ -1,11 +1,13 @@
 package server;
 
+import auxiliary.RoleSchoolAndPersonId;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import entity.Person;
+import entity.RoleSchool;
 import exceptions.InvalidRequestException;
 import exceptions.NotFoundException;
 import facades.ServerFacadeMock;
@@ -37,6 +39,7 @@ public class RestServer {
         HttpServer server = HttpServer.create(new InetSocketAddress(ip, port), 0);
         //REST Routes
         server.createContext("/person", new HandlerPerson());
+        server.createContext("/role", new HandlerRole());
         //HTTP Server Routes
         server.createContext(filesUri, new HandlerFileServer());
         facade = new ServerFacadeMock();
@@ -155,66 +158,117 @@ public class RestServer {
             return response;
         }
 
-//stolen
-        class HandlerFileServer implements HttpHandler {
+    }
 
-            @Override
-            public void handle(HttpExchange he) throws IOException {
-                int responseCode = 500;
-                //Set initial error values if an un expected problem occurs
-                String errorMsg = null;
-                byte[] bytesToSend = "<h1>Internal Error </h1><p>We are sorry. The server encountered an unexpected problem</p>".getBytes();
-                String mime = null;
+    class HandlerFileServer implements HttpHandler {
 
-                String requestedFile = he.getRequestURI().toString();
-                String f = requestedFile.substring(requestedFile.lastIndexOf("/") + 1);
-                try {
-                    String extension = f.substring(f.lastIndexOf("."));
-                    mime = getMime(extension);
-                    File file = new File(publicFolder + f);
-                    System.out.println(publicFolder + f);
-                    bytesToSend = new byte[(int) file.length()];
-                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-                    bis.read(bytesToSend, 0, bytesToSend.length);
-                    responseCode = 200;
-                } catch (Exception e) {
-                    responseCode = 404;
-                    errorMsg = "<h1>404 Not Found</h1>No context found for request";
-                }
-                if (responseCode == 200) {
-                    Headers h = he.getResponseHeaders();
-                    h.set("Content-Type", mime);
-                } else {
-                    bytesToSend = errorMsg.getBytes();
-                }
-                he.sendResponseHeaders(responseCode, bytesToSend.length);
-                try (OutputStream os = he.getResponseBody()) {
-                    os.write(bytesToSend, 0, bytesToSend.length);
-                }
+        @Override
+        public void handle(HttpExchange he) throws IOException {
+            int responseCode = 500;
+            //Set initial error values if an un expected problem occurs
+            String errorMsg = null;
+            byte[] bytesToSend = "<h1>Internal Error </h1><p>We are sorry. The server encountered an unexpected problem</p>".getBytes();
+            String mime = null;
+
+            String requestedFile = he.getRequestURI().toString();
+            String f = requestedFile.substring(requestedFile.lastIndexOf("/") + 1);
+            try {
+                String extension = f.substring(f.lastIndexOf("."));
+                mime = getMime(extension);
+                File file = new File(publicFolder + f);
+                System.out.println(publicFolder + f);
+                bytesToSend = new byte[(int) file.length()];
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+                bis.read(bytesToSend, 0, bytesToSend.length);
+                responseCode = 200;
+            } catch (Exception e) {
+                responseCode = 404;
+                errorMsg = "<h1>404 Not Found</h1>No context found for request";
             }
-
-            private String getMime(String extension) {
-                String mime = "";
-                switch (extension) {
-                    case ".pdf":
-                        mime = "application/pdf";
-                        break;
-                    case ".png":
-                        mime = "image/png";
-                    case ".css":
-                        mime = "text/css";
-                        break;
-                    case ".js":
-                        mime = "text/javascript";
-                        break;
-                    case ".html":
-                        mime = "text/html";
-                        break;
-                    case ".jar":
-                        mime = "application/java-archive";
-                        break;
-                }
-                return mime;
+            if (responseCode == 200) {
+                Headers h = he.getResponseHeaders();
+                h.set("Content-Type", mime);
+            } else {
+                bytesToSend = errorMsg.getBytes();
+            }
+            he.sendResponseHeaders(responseCode, bytesToSend.length);
+            try (OutputStream os = he.getResponseBody()) {
+                os.write(bytesToSend, 0, bytesToSend.length);
             }
         }
+
+        private String getMime(String extension) {
+            String mime = "";
+            switch (extension) {
+                case ".pdf":
+                    mime = "application/pdf";
+                    break;
+                case ".png":
+                    mime = "image/png";
+                case ".css":
+                    mime = "text/css";
+                    break;
+                case ".js":
+                    mime = "text/javascript";
+                    break;
+                case ".html":
+                    mime = "text/html";
+                    break;
+                case ".jar":
+                    mime = "application/java-archive";
+                    break;
+            }
+            return mime;
+        }
     }
+
+    class HandlerRole implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange he) throws IOException {
+            int status = 200;
+            String response = "";
+            String method = he.getRequestMethod().toUpperCase();
+            switch (method) {
+                case "GET":
+                    break;
+                case "POST":
+                    try {
+                        response = handlePost(he);
+                    } catch (UnsupportedEncodingException ex) {
+                        response = ex.getMessage();
+                        status = 400;
+                    } catch (NotFoundException ex) {
+                        response = ex.getMessage();
+                        status = 404;
+                    }
+                    break;
+                case "PUT":
+                    break;
+                case "DELETE":
+                    break;
+            }
+            he.getResponseHeaders().add("Content-Type", "application/json");
+            he.sendResponseHeaders(status, 0);
+            try (OutputStream os = he.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+        }
+
+        private String handlePost(HttpExchange he) throws UnsupportedEncodingException, IOException, NotFoundException {
+            InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
+            BufferedReader br = new BufferedReader(isr);
+            String jsonQuery = br.readLine();
+            String response = "";
+            if (jsonQuery.contains("<") || jsonQuery.contains(">")) {
+                throw new IllegalArgumentException("Illegal characters in input");
+            }
+            RoleSchoolAndPersonId roleAndId = gson.fromJson(jsonQuery, RoleSchoolAndPersonId.class);
+            String jsonRole = gson.toJson(roleAndId.getRole());
+            RoleSchool role = facade.addRoleToPerson(jsonRole, roleAndId.getPersonId());
+            response = gson.toJson(role, RoleSchool.class);
+            return response;
+        }
+    }
+
+}
