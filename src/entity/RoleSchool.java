@@ -15,6 +15,13 @@ public class RoleSchool implements Serializable
     private Long id;
 
     private String roleName;
+
+    public RoleSchool() {
+    }
+
+    public RoleSchool(String roleName) {
+        this.roleName = roleName;
+    }
     
     public Long getId() {
         return id;
@@ -36,7 +43,4 @@ public class RoleSchool implements Serializable
     public String toString() {
         return "RoleSchool{" + "id = " + id + ", roleName = " + roleName + '}';
     }
-
-    
-
 }
