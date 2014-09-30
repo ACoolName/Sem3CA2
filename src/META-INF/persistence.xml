@@ -4,6 +4,9 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>entity.Person</class>
     <class>entity.RoleSchool</class>
+    <class>entity.Teacher</class>
+    <class>entity.Student</class>
+    <class>entity.AssistentTeacher</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/CA2db"/>
       <property name="javax.persistence.jdbc.password" value="password"/>
