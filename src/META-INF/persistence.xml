@@ -5,7 +5,8 @@
     <class>entity.Person</class>
     <class>entity.Teacher</class>
     <class>entity.Student</class>
-    <class>entity.AssistentTeacher</class>
+    <class>entity.AssistantTeacher</class>
+    <class>entity.RoleSchool</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/CA2db"/>
       <property name="javax.persistence.jdbc.password" value="password"/>
