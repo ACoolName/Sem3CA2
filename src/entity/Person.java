@@ -31,7 +31,7 @@ public class Person implements Serializable {
     private String email;
 
     @OneToMany
-    private List<RoleSchool> roles = new ArrayList<>();
+    private List<RoleSchool> roles;
 
     public List<RoleSchool> getRoles() {
         return roles;
@@ -46,9 +46,11 @@ public class Person implements Serializable {
     }
 
     public Person() {
+        roles = new ArrayList<>();
     }
 
     public Person(String firstName, String lastName, String phone, String email) {
+        roles = new ArrayList<>();
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
