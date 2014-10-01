@@ -28,7 +28,7 @@ public class ServerFacadeMock implements ServerFacade {
     @Override
     public String getPersons() {
         if (persons.isEmpty()) {
-            return null;
+            return "[]";
         }
         return gson.toJson(persons.values());
     }

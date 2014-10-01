@@ -36,9 +36,10 @@ public class RestServer {
     private static final boolean DEVELOPMENT_MODE = true;
     private ServerFacade facade;
     private Gson gson;
+    private HttpServer server;
 
     public void run() throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(ip, port), 0);
+        server = HttpServer.create(new InetSocketAddress(ip, port), 0);
         //REST Routes
         server.createContext("/person", new HandlerPerson());
         server.createContext("/role", new HandlerRole());
@@ -47,8 +48,6 @@ public class RestServer {
         facade = new ServerFacadeDB();
         gson = new Gson();
         server.start();
-        facade.addPerson(gson.toJson(new Person("ddd", "ccc", "dasd", "das")));
-        System.out.println("Server started, listening on port: " + port);
     }
 
     public static void main(String[] args) throws Exception {
@@ -59,6 +58,27 @@ public class RestServer {
         }
         new RestServer().run();
     }
+    
+    //used for testing
+    public HttpServer getServer() {
+        return server;
+    }
+    
+    //method used for testing
+    public static RestServer getRestServer(String[] args) throws Exception {
+        if (args.length >= 3) {
+            port = Integer.parseInt(args[0]);
+            ip = args[1];
+            publicFolder = args[2];
+        }
+        return new RestServer();
+    }
+
+    public void setFacade(ServerFacade facade) {
+        this.facade = facade;
+    }
+    
+    
 
     class HandlerPerson implements HttpHandler {
 
@@ -115,7 +135,7 @@ public class RestServer {
         }
 
         private String handleGet(HttpExchange he) throws NotFoundException {
-            String response;
+            String response = "";
             String path = he.getRequestURI().getPath();
             int lastIndex = path.lastIndexOf("/");
             if (lastIndex > 0) {  //person/id
