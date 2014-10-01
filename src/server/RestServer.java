@@ -58,12 +58,12 @@ public class RestServer {
         }
         new RestServer().run();
     }
-    
+
     //used for testing
     public HttpServer getServer() {
         return server;
     }
-    
+
     //method used for testing
     public static RestServer getRestServer(String[] args) throws Exception {
         if (args.length >= 3) {
@@ -77,8 +77,6 @@ public class RestServer {
     public void setFacade(ServerFacade facade) {
         this.facade = facade;
     }
-    
-    
 
     class HandlerPerson implements HttpHandler {
 
@@ -98,6 +96,7 @@ public class RestServer {
                         response = "Id is not a number";
                         status = 404;
                     } catch (NotFoundException nfe) {
+                        System.out.println("NotFound thrown");
                         response = nfe.getMessage();
                         status = 404;
                     }
@@ -127,7 +126,13 @@ public class RestServer {
                     }
                     break;
             }
-            he.getResponseHeaders().add("Content-Type", "application/json");
+            if (status == 200) {
+                he.getResponseHeaders().add("Content-Type", "application/json");
+                System.out.println("content json");
+            } else {
+                he.getResponseHeaders().add("Content-Type", "text/plain");
+                System.out.println("content text");
+            }
             he.sendResponseHeaders(status, 0);
             try (OutputStream os = he.getResponseBody()) {
                 os.write(response.getBytes());

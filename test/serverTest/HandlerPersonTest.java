@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,6 +24,7 @@ public class HandlerPersonTest {
 
     static ServerFacade facade;
     static RestServer restServer;
+    final int BEGIN_ID = 0;
 
     public HandlerPersonTest() {
     }
@@ -78,6 +80,48 @@ public class HandlerPersonTest {
         String response = br.readLine();
         String expected = "[{\"id\":0,\"firstName\":\"ddd\",\"lastName\":\"ccc\",\"phone\":\"dasd\",\"email\":\"das\",\"roles\":[]},"
                 + "{\"id\":1,\"firstName\":\"aaa\",\"lastName\":\"bbb\",\"phone\":\"asd\",\"email\":\"aaa\",\"roles\":[]}]";
+        assertEquals(expected, response);
+    }
+
+    @Test
+    public void handleGetPersonValidRequest() throws IOException {
+        facade.addPerson("{\"firstName\":\"aaa\",\"lastName\":\"bbb\",\"phone\":\"asd\",\"email\":\"aaa\"}");
+        URLConnection connection = new URL("http://localhost:8080/person/" + Integer.toString(BEGIN_ID)).openConnection();
+        connection.connect();
+        InputStreamReader isr = new InputStreamReader(connection.getInputStream(), "utf-8");
+        BufferedReader br = new BufferedReader(isr);
+        String response = br.readLine();
+        String expected = "{\"id\":0,\"firstName\":\"aaa\",\"lastName\":\"bbb\",\"phone\":\"asd\",\"email\":\"aaa\",\"roles\":[]}";
+        assertEquals(expected, response);
+    }
+
+    @Test
+    public void handleGetPersonValidRequestNoData() throws IOException {
+        URLConnection connection = new URL("http://localhost:8080/person/" + Integer.toString(BEGIN_ID)).openConnection();
+        HttpURLConnection con = (HttpURLConnection) connection;
+        connection.connect();
+        int response = con.getResponseCode();
+        int expected = 404;
+        assertEquals(expected, response);
+    }
+    
+    @Test
+    public void handleGetPersonInvalidRequestNegativeNumber() throws IOException {
+        URLConnection connection = new URL("http://localhost:8080/person/-1").openConnection();
+        HttpURLConnection con = (HttpURLConnection) connection;
+        connection.connect();
+        int response = con.getResponseCode();
+        int expected = 404;
+        assertEquals(expected, response);
+    }
+    
+    @Test
+    public void handleGetPersonInvalidRequestLetters() throws IOException {
+        URLConnection connection = new URL("http://localhost:8080/person/aaa").openConnection();
+        HttpURLConnection con = (HttpURLConnection) connection;
+        connection.connect();
+        int response = con.getResponseCode();
+        int expected = 404;
         assertEquals(expected, response);
     }
 }
