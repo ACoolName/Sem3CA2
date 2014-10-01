@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -11,12 +12,16 @@ import javax.persistence.ManyToMany;
 public class AssistantTeacher extends RoleSchool {
 
     private static final long serialVersionUID = 1L;
-    
+
     @ManyToMany(mappedBy = "assistantTeachers")
-    private List<Course> courses;
+    private List<Course> courses = new ArrayList();
 
     public AssistantTeacher() {
         super("AssitantTeacher");
+    }
+
+    public void addCourse(Course c) {
+        courses.add(c);
     }
 
     @Override
