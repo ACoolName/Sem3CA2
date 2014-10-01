@@ -47,7 +47,6 @@ public class RestServer {
         facade = new ServerFacadeDB();
         gson = new Gson();
         server.start();
-        facade.addPerson(gson.toJson(new Person("ddd", "ccc", "dasd", "das")));
         System.out.println("Server started, listening on port: " + port);
     }
 

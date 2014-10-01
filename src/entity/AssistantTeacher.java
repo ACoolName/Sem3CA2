@@ -11,6 +11,7 @@ import javax.persistence.ManyToMany;
 public class AssistantTeacher extends RoleSchool {
 
     private static final long serialVersionUID = 1L;
+    
     @ManyToMany(mappedBy = "assistantTeachers")
     private List<Course> courses;
 
