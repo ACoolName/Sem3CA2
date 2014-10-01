@@ -31,6 +31,7 @@ public class BusinessAcademy implements Serializable {
         this.name = name;
     }
 
+    
     public BusinessAcademy() {
     }
     
