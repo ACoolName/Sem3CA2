@@ -30,7 +30,6 @@ public class BusinessAcademy implements Serializable {
     public BusinessAcademy(String name) {
         this.name = name;
     }
-
     
     public BusinessAcademy() {
     }
