@@ -7,11 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
     @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p ORDER BY p.firstName")
 })
@@ -26,9 +29,9 @@ public class Person implements Serializable {
     private String lastName;
     private String phone;
     private String email;
-    
+
     @OneToMany
-    private List<RoleSchool> roles = new ArrayList<>();
+    private List<RoleSchool> roles;
 
     public List<RoleSchool> getRoles() {
         return roles;
@@ -37,15 +40,17 @@ public class Person implements Serializable {
     public void setRoles(List<RoleSchool> roles) {
         this.roles = roles;
     }
-    
+
     public void addRole(RoleSchool role) {
         roles.add(role);
     }
-    
+
     public Person() {
+        roles = new ArrayList<>();
     }
 
     public Person(String firstName, String lastName, String phone, String email) {
+        roles = new ArrayList<>();
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
