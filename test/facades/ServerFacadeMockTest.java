@@ -1,4 +1,4 @@
-package facade;
+package facades;
 
 import com.google.gson.Gson;
 import entity.Person;

@@ -22,6 +22,10 @@ public class ServerFacadeDB implements ServerFacade {
     public ServerFacadeDB() {
         em = createEntityManager();
     }
+    
+    protected ServerFacadeDB(EntityManager em) {
+        this.em = em;
+    }
 
     private static EntityManager createEntityManager() {
         EntityManagerFactory emf
@@ -41,6 +45,7 @@ public class ServerFacadeDB implements ServerFacade {
         } catch (Exception e) {
             transaction.rollback();
         }
+
         return p;
     }
 

@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
-    @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p ORDER BY p.firstName")
+    @NamedQuery(name = "Person.findAll", query = "SELECT p FROM Person p")
 })
 public class Person implements Serializable {
 

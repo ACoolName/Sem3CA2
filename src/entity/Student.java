@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -14,9 +15,13 @@ public class Student extends RoleSchool  {
     
     private String semester;
     @ManyToMany(mappedBy = "students")
-    private List<Course> courses;
+    private List<Course> courses = new ArrayList();
 
     public Student() {
+    }
+    
+    public void addCourse(Course c) {
+        courses.add(c);
     }
     
     public Student (String semester){

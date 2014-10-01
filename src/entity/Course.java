@@ -1,34 +1,80 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 @Entity
+@NamedQueries({
+    @NamedQuery(name = "Course.findAll", query = "SELECT c FROM Course c")
+})
 public class Course implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    
+
     private String name;
-    
+
     private String description;
-    
-    @ManyToMany
-    private List<Student> students;
 
     @ManyToMany
-    private List<Teacher> teachers;
-    
+    @JoinTable(name = "COURSE_STUDENT",
+            joinColumns = {
+                @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "STUDENT_ID", referencedColumnName = "ID")})
+
+    private List<Student> students = new ArrayList();
+
     @ManyToMany
-    private List<AssistantTeacher> assistantTeachers;
-    
-    
+    @JoinTable(name = "COURSE_TEACHER",
+            joinColumns = {
+                @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "TEACHER_ID", referencedColumnName = "ID")})
+
+    private List<Teacher> teachers = new ArrayList();
+
+    @ManyToMany
+    @JoinTable(name = "COURSE_ASSTEACHER",
+            joinColumns = {
+                @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "ASSTEACHER_ID", referencedColumnName = "ID")})
+
+    private List<AssistantTeacher> assistantTeachers = new ArrayList();
+
+    public Course() {
+    }
+
+    public Course(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public void addStudent(Student s) {
+        students.add(s);
+    }
+
+    public void addTeacher(Teacher t) {
+        teachers.add(t);
+    }
+
+    public void addAssistantTeacher(AssistantTeacher at) {
+        assistantTeachers.add(at);
+    }
+
     public Long getId() {
         return id;
     }
@@ -38,28 +84,7 @@ public class Course implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Course)) {
-            return false;
-        }
-        Course other = (Course) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
-        return "entity.Course[ id=" + id + " ]";
+        return "Course{" + "id=" + id + ", name=" + name + ", description=" + description + '}';
     }
-
 }

@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -8,14 +9,19 @@ import javax.persistence.ManyToMany;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Teacher extends RoleSchool  {
+public class Teacher extends RoleSchool {
+
     private static final long serialVersionUID = 1L;
-    
+
     private String degree;
     @ManyToMany(mappedBy = "teachers")
-    private List<Course> courses;
+    private List<Course> courses = new ArrayList();
 
     public Teacher() {
+    }
+
+    public void addCourse(Course c) {
+        courses.add(c);
     }
 
     public Teacher(String degree) {
@@ -30,10 +36,10 @@ public class Teacher extends RoleSchool  {
     public void setDegree(String degree) {
         this.degree = degree;
     }
-    
+
     @Override
     public String toString() {
-        return "Teacher{" + "id = " + getId() + ", roleName = " +
-                getRoleName() + ", Degree = " + degree + '}';
+        return "Teacher{" + "id = " + getId() + ", roleName = "
+                + getRoleName() + ", Degree = " + degree + '}';
     }
 }
