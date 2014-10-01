@@ -16,6 +16,7 @@ public class Teacher extends RoleSchool {
     private String degree;
     @ManyToMany(mappedBy = "taughtBy")
     private List<Course> teaches = new ArrayList();
+    
 
     public Teacher() {
     }
