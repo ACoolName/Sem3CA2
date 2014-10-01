@@ -2,10 +2,12 @@ package facades;
 
 import com.google.gson.Gson;
 import entity.AssistantTeacher;
+import entity.Course;
 import entity.Person;
 import entity.RoleSchool;
 import entity.Student;
 import entity.Teacher;
+import exceptions.InvalidCourseException;
 import exceptions.InvalidRole;
 import exceptions.NotFoundException;
 import interfaces.ServerFacade;
@@ -22,7 +24,7 @@ public class ServerFacadeDB implements ServerFacade {
     public ServerFacadeDB() {
         em = createEntityManager();
     }
-    
+
     protected ServerFacadeDB(EntityManager em) {
         this.em = em;
     }
@@ -99,6 +101,50 @@ public class ServerFacadeDB implements ServerFacade {
             transaction.rollback();
         }
         return p;
+    }
+
+    @Override
+    public Course addCourse(String json, long personID, long roleSchoolID, String roleName) throws NotFoundException, InvalidCourseException {
+        Course c = gson.fromJson(json, Course.class);
+        Person p = em.find(Person.class, personID);
+        System.out.println("HERE123");
+        for (RoleSchool r : p.getRoles()) {
+            if (r.getRoleName().equals(roleName)) {
+                switch (roleName) {
+                    case "Student": {
+                        //RoleSchool temp = em.find(RoleSchool.class, roleSchoolID); //this returns null 
+                        Student s = (Student) r;
+                        s.addCourse(c);
+                        c.addStudent(s);
+                        System.out.println("HERE");
+                    }
+                    break;
+                    case "Teacher": {
+                        //RoleSchool temp = em.find(Teacher.class, roleSchoolID);
+                        Teacher t = (Teacher) r;
+                        t.addCourse(c);
+                        c.addTeacher(t);
+                    }
+                    break;
+                    case "AssistantTeacher": {
+                        //RoleSchool temp = em.find(RoleSchool.class, roleSchoolID);
+                        AssistantTeacher as = (AssistantTeacher) r;
+                        as.addCourse(c);
+                        c.addAssistantTeacher(as);
+                    }
+                    break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return c;
+    }
+
+    @Override
+    public String getCourses() {
+        return gson.toJson(em.createNamedQuery("Course.findAll", Course.class).getResultList());
     }
 
 }

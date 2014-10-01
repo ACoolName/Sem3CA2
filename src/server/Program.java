@@ -23,7 +23,7 @@ public class Program {
     
     private static void addPeople() {
         
-        EntityTransaction transaction = em.getTransaction();
+      EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         Person p = new Person("addd", "bbbbb", "cccc", "dddd");
         em.persist(p);

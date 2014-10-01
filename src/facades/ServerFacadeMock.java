@@ -3,10 +3,12 @@ package facades;
 import exceptions.NotFoundException;
 import com.google.gson.Gson;
 import entity.AssistantTeacher;
+import entity.Course;
 import entity.Person;
 import entity.RoleSchool;
 import entity.Student;
 import entity.Teacher;
+import exceptions.InvalidCourseException;
 import exceptions.InvalidRole;
 import interfaces.ServerFacade;
 import java.util.HashMap;
@@ -81,5 +83,15 @@ public class ServerFacadeMock implements ServerFacade {
             throw new NotFoundException("No person exists for the given id");
         }
         return p;
+    }
+
+    @Override
+    public Course addCourse(String json, long personID, long roleSchoolID, String roleName) throws NotFoundException, InvalidCourseException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getCourses() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
