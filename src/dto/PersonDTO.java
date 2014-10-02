@@ -17,5 +17,4 @@ public class PersonDTO {
         this.email = p.getEmail();
     }
     
-    
 }

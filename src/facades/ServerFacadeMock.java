@@ -18,6 +18,7 @@ import java.util.Map;
 public class ServerFacadeMock implements ServerFacade {
 
     Map<Long, Person> persons = new HashMap();
+    Map<Long, Course> courses = new HashMap();
     private Long nextId;
     private Long nextRoleId;
     private final Gson gson = new Gson();
@@ -86,7 +87,7 @@ public class ServerFacadeMock implements ServerFacade {
     }
 
     @Override
-    public Course addCourse(String json) throws NotFoundException, InvalidCourseException {
+    public Course addCourse(String json) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -107,6 +108,21 @@ public class ServerFacadeMock implements ServerFacade {
 
     @Override
     public String getRoles(long personId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getStudentsInCourse(long courseId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAssistantTeachersInCourse(long courseId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getTeachersInCourse(long courseId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

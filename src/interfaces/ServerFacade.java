@@ -16,20 +16,27 @@ public interface ServerFacade {
 
     Person addPerson(String json);
     
-    String getRole(long personId, String roleName) throws InvalidRole;
+    String getRole(long personId, String roleName) throws InvalidRole, NotFoundException;
     
-    String getRoles(long personId);
+    String getRoles(long personId) throws NotFoundException;
 
     RoleSchool addRoleToPerson(String json, long id) throws NotFoundException,
             InvalidRole;
 
     Person deletePerson(long id) throws NotFoundException;
 
-    Course addCourse(String json) throws NotFoundException, InvalidCourseException;
+    Course addCourse(String json);
 
     String getCourses();
 
-    public Course addPersonToCourse(long courseId, long personId, long roleSchoolId,
+    Course addPersonToCourse(long courseId, long personId, long roleSchoolId,
             String roleName) throws NotFoundException, InvalidCourseException,
             InvalidRole;
+    
+    String getStudentsInCourse(long courseId) throws NotFoundException;
+    
+    String getAssistantTeachersInCourse(long courseId) throws NotFoundException;
+    
+    String getTeachersInCourse(long courseId) throws NotFoundException;
+    
 }

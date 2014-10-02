@@ -1,8 +1,12 @@
 package facades;
 
 import com.google.gson.Gson;
+import dto.AssistantTeacherDTO;
 import dto.CourseDTO;
 import dto.PersonDTO;
+import dto.RoleSchoolDTO;
+import dto.StudentDTO;
+import dto.TeacherDTO;
 import entity.AssistantTeacher;
 import entity.Course;
 import entity.Person;
@@ -47,7 +51,6 @@ public class ServerFacadeDB implements ServerFacade {
         transaction.begin();
         Person p = gson.fromJson(json, Person.class);
 
-        
         try {
             em.persist(p);
             transaction.commit();
@@ -131,9 +134,17 @@ public class ServerFacadeDB implements ServerFacade {
             String roleName) throws NotFoundException, InvalidCourseException,
             InvalidRole {
         Course c = em.find(Course.class, courseId);
+        if (c == null) {
+            throw new InvalidCourseException("No such course");
+        }
         Person p = em.find(Person.class, personId);
+        if (p == null) {
+            throw new NotFoundException("No person with that id");
+        }
         RoleSchool r = p.getRole(roleName);
-        if(r == null) throw new InvalidRole("Person doesn't have that role");
+        if (r == null) {
+            throw new InvalidRole("Person doesn't have that role");
+        }
         switch (roleName) {
             case "Student":
                 Student s = em.find(Student.class, r.getId()); //this returns null 
@@ -164,7 +175,7 @@ public class ServerFacadeDB implements ServerFacade {
     }
 
     @Override
-    public Course addCourse(String json) throws NotFoundException, InvalidCourseException {
+    public Course addCourse(String json) {
         Course c = gson.fromJson(json, Course.class);
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
@@ -174,7 +185,6 @@ public class ServerFacadeDB implements ServerFacade {
         } catch (Exception e) {
             transaction.rollback();
         }
-
         return c;
     }
 
@@ -190,25 +200,110 @@ public class ServerFacadeDB implements ServerFacade {
     }
 
     @Override
-    public String getRole(long personId, String roleName) throws InvalidRole {
-        if(isValidRole(roleName)==false)
+    public String getRole(long personId, String roleName) throws InvalidRole, NotFoundException {
+        if (isValidRole(roleName) == false) {
             throw new InvalidRole(roleName + " is invalid role");
+        }
         Person person = em.find(Person.class, personId);
+        if (person == null) {
+            throw new NotFoundException("No person with that id");
+        }
         RoleSchool r = person.getRole(roleName);
-        if(r == null) throw new InvalidRole("Person doesn't have that role");
-        return gson.toJson(r);
+        if (r == null) {
+            throw new InvalidRole("Person doesn't have that role");
+        }
+        String response;
+        if (roleName.equals("Student")) {
+            response = gson.toJson(new StudentDTO((Student) r));
+        } else if (roleName.equals("Teacher")) {
+            response = gson.toJson(new TeacherDTO((Teacher) r));
+        } else {
+            response = gson.toJson(new AssistantTeacherDTO((AssistantTeacher) r));
+        }
+        return response;
     }
 
     @Override
-    public String getRoles(long personId) {
-        //create dto only for person together with role 
-        //should not take personID as parameter 
-        return null;
+    public String getRoles(long personId) throws NotFoundException {
+        Person p = em.find(Person.class, personId);
+        if (p == null) throw new NotFoundException("No person with that id");
+        Map<String, RoleSchool> m = p.getRoles();
+        List<RoleSchoolDTO> roles = new ArrayList();
+        for (Map.Entry<String, RoleSchool> entrySet : m.entrySet()) {
+            String key = entrySet.getKey();
+            RoleSchool value = entrySet.getValue();
+            if (key.equals("Student")) {
+                roles.add(new StudentDTO((Student) value));
+            } else if (key.equals("Teacher")) {
+                roles.add(new TeacherDTO((Teacher) value));
+            } else {
+                roles.add(new AssistantTeacherDTO((AssistantTeacher) value));
+            }
+        }
+        return gson.toJson(roles);
     }
-    
+
     private boolean isValidRole(String roleName) {
-        return roleName.equals("Student") || roleName.equals("Teacher") || 
-                roleName.equals("AssistantTeacher");
+        return roleName.equals("Student") || roleName.equals("Teacher")
+                || roleName.equals("AssistantTeacher");
+    }
+
+    @Override
+    public String getStudentsInCourse(long courseId) throws NotFoundException {
+        Course c = em.find(Course.class, courseId);
+        if (c == null) {
+            throw new NotFoundException("No course with that id");
+        }
+        List<Student> roles = c.getStudents();
+        List<Person> people = em.createNamedQuery("Person.findAll",
+                Person.class).getResultList();
+        List<PersonDTO> students = new ArrayList();
+        for (Person p : people) {
+            Student s = (Student) p.getRole("Student");
+            if (s != null && roles.contains(s)) {
+                students.add(new PersonDTO(p));
+            }
+        }
+        return gson.toJson(students);
+    }
+
+    @Override
+    public String getAssistantTeachersInCourse(long courseId) throws NotFoundException {
+        Course c = em.find(Course.class, courseId);
+
+        if (c == null) {
+            throw new NotFoundException("No course with that id");
+        }
+        List<AssistantTeacher> roles = c.getAssistents();
+        List<Person> people = em.createNamedQuery("Person.findAll",
+                Person.class).getResultList();
+        List<PersonDTO> assTeachers = new ArrayList();
+        for (Person p : people) {
+            AssistantTeacher at = (AssistantTeacher) p.getRole("AssistantTeacher");
+            if (at != null && roles.contains(at)) {
+                assTeachers.add(new PersonDTO(p));
+            }
+        }
+        return gson.toJson(assTeachers);
+    }
+
+    @Override
+    public String getTeachersInCourse(long courseId) throws NotFoundException {
+        Course c = em.find(Course.class, courseId);
+        if (c == null) {
+            throw new NotFoundException("No course with that id");
+        }
+        List<AssistantTeacher> roles = c.getAssistents();
+        List<Person> people = em.createNamedQuery("Person.findAll",
+                Person.class).getResultList();
+        List<PersonDTO> assTeachers = new ArrayList();
+        for (Person p : people) {
+            AssistantTeacher at = (AssistantTeacher) p.getRole("AssistantTeacher");
+            if (at != null && roles.contains(at)) {
+                assTeachers.add(new PersonDTO(p));
+            }
+        }
+        return gson.toJson(assTeachers);
     }
 
 }
