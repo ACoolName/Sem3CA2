@@ -3,6 +3,7 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Column;
@@ -56,15 +57,16 @@ public class Person implements Serializable {
     }
 
     public void addRole(RoleSchool role) {
+        if(roles == null) {
+            roles = new HashMap();
+        }
         roles.put(role.getRoleName(), role);
     }
 
     public Person() {
-        roles = new HashMap<>();
     }
 
     public Person(String firstName, String lastName, String phone, String email) {
-        roles = new HashMap<>();
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;

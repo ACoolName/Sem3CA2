@@ -51,6 +51,7 @@ public class ServerFacadeDB implements ServerFacade {
             em.persist(p);
             transaction.commit();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             transaction.rollback();
         }
 
@@ -95,15 +96,15 @@ public class ServerFacadeDB implements ServerFacade {
         } else {
             throw new InvalidRole(r.getRoleName() + " isn't a valid role");
         }
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        try {
-            em.persist(r2);
-            p.addRole(r2);
-            transaction.commit();
-        } catch (Exception e) {
-            transaction.rollback();
-        }
+//        EntityTransaction transaction = em.getTransaction();
+//        transaction.begin();
+//        try {
+//            em.persist(r2);
+//            p.addRole(r2);
+//            transaction.commit();
+//        } catch (Exception e) {
+//            transaction.rollback();
+//        }
         return r2;
     }
 
