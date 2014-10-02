@@ -13,6 +13,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
+
+//shity git
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @NamedQueries({
