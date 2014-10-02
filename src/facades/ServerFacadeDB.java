@@ -14,7 +14,9 @@ import exceptions.InvalidRole;
 import exceptions.NotFoundException;
 import interfaces.ServerFacade;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -43,7 +45,6 @@ public class ServerFacadeDB implements ServerFacade {
     public Person addPerson(String json) {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
-        System.out.println(transaction.isActive());
         Person p = gson.fromJson(json, Person.class);
 
         
@@ -66,7 +67,7 @@ public class ServerFacadeDB implements ServerFacade {
         for (Person p : people) {
             dtoPeople.add(new PersonDTO(p));
         }
-        return gson.toJson(dtoPeople);
+        return gson.toJson(dtoPeople); // this is not right ! 
     }
 
     @Override
@@ -96,15 +97,15 @@ public class ServerFacadeDB implements ServerFacade {
         } else {
             throw new InvalidRole(r.getRoleName() + " isn't a valid role");
         }
-//        EntityTransaction transaction = em.getTransaction();
-//        transaction.begin();
-//        try {
-//            em.persist(r2);
-//            p.addRole(r2);
-//            transaction.commit();
-//        } catch (Exception e) {
-//            transaction.rollback();
-//        }
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            em.persist(r2);
+            p.addRole(r2);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+        }
         return r2;
     }
 
@@ -190,7 +191,7 @@ public class ServerFacadeDB implements ServerFacade {
 
     @Override
     public String getRole(long personId, String roleName) throws InvalidRole {
-        if(isValidRole(roleName))
+        if(isValidRole(roleName)==false)
             throw new InvalidRole(roleName + " is invalid role");
         Person person = em.find(Person.class, personId);
         RoleSchool r = person.getRole(roleName);
@@ -200,7 +201,9 @@ public class ServerFacadeDB implements ServerFacade {
 
     @Override
     public String getRoles(long personId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //create dto only for person together with role 
+        //should not take personID as parameter 
+        return null;
     }
     
     private boolean isValidRole(String roleName) {

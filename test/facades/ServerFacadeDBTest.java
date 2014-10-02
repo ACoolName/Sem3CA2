@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import entity.Course;
 import entity.Person;
 import entity.Student;
+import entity.Teacher;
 import exceptions.InvalidCourseException;
 import exceptions.InvalidRole;
 import exceptions.NotFoundException;
@@ -42,13 +43,13 @@ public class ServerFacadeDBTest {
 
     @Before
     public void setUp() {
-//        EntityTransaction transaction = em.getTransaction();
-//        transaction.begin();
-//        em.createNativeQuery("DELETE FROM PERSON_ROLESCHOOL").executeUpdate();
-//        em.createNativeQuery("DELETE FROM COURSE").executeUpdate();
-//        em.createNativeQuery("DELETE FROM ROLESCHOOL").executeUpdate();
-//        em.createNativeQuery("DELETE FROM PERSON").executeUpdate();
-//        transaction.commit();
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        em.createNativeQuery("DELETE FROM PERSON_ROLESCHOOL").executeUpdate();
+        em.createNativeQuery("DELETE FROM COURSE").executeUpdate();
+        em.createNativeQuery("DELETE FROM ROLESCHOOL").executeUpdate();
+        em.createNativeQuery("DELETE FROM PERSON").executeUpdate();
+        transaction.commit();
     }
 
     @Test
@@ -103,7 +104,9 @@ public class ServerFacadeDBTest {
         persons = gson.fromJson(facade.getPersons(),
                 new TypeToken<List<Person>>() {
                 }.getType());
-        assertEquals(persons.get(0).getRoles().get(0).getRoleName(), "Student");
+        System.out.println(s.getRoleName());
+        System.out.println(persons.get(0).getRoles());
+        assertEquals(persons.get(0).getRole(s.getRoleName()).getRoleName(), "Student"); //not working ! 
     }
 
     @Test
@@ -124,10 +127,14 @@ public class ServerFacadeDBTest {
         Course c = new Course("lol", "THIS IS NOT WORKING!");
         c.setId(23l);
         facade.addCourse(gson.toJson(c)); //This needs to be revised ! 
+        facade.addPersonToCourse(c.getId(), persons.get(0).getId(), persons.get(0).getRole("Student").getId(), s.getRoleName());
         List<Course> courses = gson.fromJson(facade.getCourses(), new TypeToken<List<Course>>() {
         }.getType());
         System.out.println(courses.size());
+        //System.out.println(courses.get(0).toString());
         //gets size of courses = 0
+        //because getCourses returns dto object we don't have access to the lists of people enrolled in that course.
+        System.out.println(courses.get(0).toString());
         assertEquals(courses.get(0).getStudents().get(0).getRoleName(), "Student");
     }
 
