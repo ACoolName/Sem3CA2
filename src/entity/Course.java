@@ -13,6 +13,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 @Entity
 @NamedQueries({
@@ -47,7 +48,7 @@ public class Course implements Serializable {
             inverseJoinColumns = {
                 @JoinColumn(name = "TEACHER_ID", referencedColumnName = "ID")})
 
-    private List<Teacher> teachers = new ArrayList();
+    private List<Teacher> taughtBy = new ArrayList();
 
     @ManyToMany
     @JoinTable(name = "COURSE_ASSTEACHER",
@@ -56,11 +57,35 @@ public class Course implements Serializable {
             inverseJoinColumns = {
                 @JoinColumn(name = "ASSTEACHER_ID", referencedColumnName = "ID")})
 
-    private List<AssistantTeacher> assistantTeachers = new ArrayList();
-
+    private List<AssistantTeacher> assistents = new ArrayList();
+    
     public Course() {
     }
 
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
+    public List<Teacher> getTaughtBy() {
+        return taughtBy;
+    }
+
+    public void setTaughtBy(List<Teacher> taughtBy) {
+        this.taughtBy = taughtBy;
+    }
+
+    public List<AssistantTeacher> getAssistents() {
+        return assistents;
+    }
+
+    public void setAssistents(List<AssistantTeacher> assistents) {
+        this.assistents = assistents;
+    }
+    
     public Course(String name, String description) {
         this.name = name;
         this.description = description;
@@ -71,11 +96,11 @@ public class Course implements Serializable {
     }
 
     public void addTeacher(Teacher t) {
-        teachers.add(t);
+        taughtBy.add(t);
     }
 
     public void addAssistantTeacher(AssistantTeacher at) {
-        assistantTeachers.add(at);
+        assistents.add(at);
     }
 
     public Long getId() {

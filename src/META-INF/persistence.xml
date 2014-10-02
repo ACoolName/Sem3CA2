@@ -6,14 +6,13 @@
     <class>entity.Teacher</class>
     <class>entity.Student</class>
     <class>entity.AssistantTeacher</class>
-    <class>entity.RoleSchool</class>
     <class>entity.Course</class>
-    <class>dto.RoleSchoolDTO</class>
+    <class>entity.RoleSchool</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/CA2db"/>
-      <property name="javax.persistence.jdbc.password" value="password"/>
-      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
       <property name="javax.persistence.jdbc.user" value="username"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.password" value="password"/>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
   </persistence-unit>

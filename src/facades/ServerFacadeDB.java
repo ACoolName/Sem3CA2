@@ -3,13 +3,17 @@ package facades;
 import com.google.gson.Gson;
 import dto.PersonDTO;
 import entity.AssistantTeacher;
+import entity.Course;
 import entity.Person;
 import entity.RoleSchool;
 import entity.Student;
 import entity.Teacher;
+import exceptions.InvalidCourseException;
 import exceptions.InvalidRole;
 import exceptions.NotFoundException;
 import interfaces.ServerFacade;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -23,7 +27,7 @@ public class ServerFacadeDB implements ServerFacade {
     public ServerFacadeDB() {
         em = createEntityManager();
     }
-    
+
     protected ServerFacadeDB(EntityManager em) {
         this.em = em;
     }
@@ -82,7 +86,15 @@ public class ServerFacadeDB implements ServerFacade {
         } else {
             throw new InvalidRole(r.getRoleName() + " isn't a valid role");
         }
-        p.addRole(r2);
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            em.persist(r2);
+            p.addRole(r2);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+        }
         return r2;
     }
 
@@ -101,6 +113,63 @@ public class ServerFacadeDB implements ServerFacade {
             transaction.rollback();
         }
         return p;
+    }
+
+    @Override
+    public Course addCourse(String json, long personID, long roleSchoolID, String roleName) throws NotFoundException, InvalidCourseException {
+        Course c = gson.fromJson(json, Course.class);
+        Person p = em.find(Person.class, personID);
+        System.out.println("HERE123");
+        boolean hasTheRole = false;
+        for (RoleSchool r : p.getRoles()) {
+            if (r.getRoleName().equals(roleName)) {
+                hasTheRole = true;
+                switch (roleName) {
+                    case "Student":
+                        Student temp = em.find(Student.class, r.getId()); //this returns null 
+                        temp.addCourse(c);
+                        c.addStudent(temp);
+                        System.out.println("HERE");
+                        break;
+                    case "Teacher":
+                        //RoleSchool temp = em.find(Teacher.class, roleSchoolID);
+                        Teacher t = (Teacher) r;
+                        t.addCourse(c);
+                        c.addTeacher(t);
+                        break;
+                    case "AssistantTeacher":
+                        //RoleSchool temp = em.find(RoleSchool.class, roleSchoolID);
+                        AssistantTeacher as = (AssistantTeacher) r;
+                        as.addCourse(c);
+                        c.addAssistantTeacher(as);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        if (hasTheRole) {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            try {
+                em.persist(c);
+                transaction.commit();
+            } catch (Exception e) {
+                transaction.rollback();
+            }
+        }
+
+        return c;
+    }
+
+    @Override
+    public String getCourses() {
+        List<Course> courses = em.createNamedQuery("Course.findAll",
+                Course.class).getResultList();
+        for (Course c : courses) {
+            c.getStudents().remove(0);
+        }
+        return gson.toJson(courses);
     }
 
 }

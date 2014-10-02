@@ -18,15 +18,19 @@ public class AssistantTeacher extends RoleSchool {
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToMany(mappedBy = "assistantTeachers")
-    private List<Course> courses = new ArrayList();
+    @ManyToMany(mappedBy = "assistents")
+    private List<Course> assists = new ArrayList();
+
+    public List<Course> getAssists() {
+        return assists;
+    }
 
     public AssistantTeacher() {
         super("AssitantTeacher");
     }
 
     public void addCourse(Course c) {
-        courses.add(c);
+        assists.add(c);
     }
 
     @Override

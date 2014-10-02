@@ -23,13 +23,17 @@ public class Student extends RoleSchool  {
     private String semester;
     
     @ManyToMany(mappedBy = "students")
-    private List<Course> courses = new ArrayList();
+    private List<Course> enrolled = new ArrayList();
 
     public Student() {
     }
-    
+
+    public List<Course> getEnrolled() {
+        return enrolled;
+    }
+
     public void addCourse(Course c) {
-        courses.add(c);
+        enrolled.add(c);
     }
     
     public Student (String semester){

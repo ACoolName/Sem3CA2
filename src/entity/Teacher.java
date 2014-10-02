@@ -22,14 +22,18 @@ public class Teacher extends RoleSchool {
     @Column(length = 150, nullable = false)
     private String degree;
     
-    @ManyToMany(mappedBy = "teachers")
-    private List<Course> courses = new ArrayList();
-
+    @ManyToMany(mappedBy = "taughtBy")
+    private List<Course> teaches = new ArrayList();
+    
     public Teacher() {
     }
 
+    public List<Course> getTeaches() {
+        return teaches;
+    }
+
     public void addCourse(Course c) {
-        courses.add(c);
+        teaches.add(c);
     }
 
     public Teacher(String degree) {
