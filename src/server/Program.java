@@ -57,7 +57,7 @@ public class Program {
     private static void addCourse() {
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
-        Course c = new Course("Gay course", "Only teo allowed");
+        Course c = new Course("Men course", "Only teo allowed");
         em.persist(c);
         List<Person> people = em.createNamedQuery("Person.findAll").getResultList();
         Student s = em.find(Student.class, people.get(0).getRole("Student").getId());
