@@ -3,6 +3,7 @@ package entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,9 +26,16 @@ public class Person implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(length = 50, nullable = false)
     private String firstName;
+    
+    @Column(length = 50, nullable = false)
     private String lastName;
+    
+    @Column(length = 50, nullable = false)
     private String phone;
+    
+    @Column(length = 50, nullable = false)
     private String email;
 
     @OneToMany

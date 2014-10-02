@@ -1,6 +1,7 @@
 package facades;
 
 import com.google.gson.Gson;
+import dto.PersonDTO;
 import entity.AssistantTeacher;
 import entity.Person;
 import entity.RoleSchool;
@@ -60,7 +61,8 @@ public class ServerFacadeDB implements ServerFacade {
         if (p == null) {
             throw new NotFoundException("No person with that id");
         }
-        return gson.toJson(p);
+        PersonDTO dto = new PersonDTO(p);
+        return gson.toJson(dto);
     }
 
     @Override

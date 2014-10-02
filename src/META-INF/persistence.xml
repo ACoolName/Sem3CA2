@@ -8,6 +8,7 @@
     <class>entity.AssistantTeacher</class>
     <class>entity.RoleSchool</class>
     <class>entity.Course</class>
+    <class>dto.RoleSchoolDTO</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/CA2db"/>
       <property name="javax.persistence.jdbc.password" value="password"/>
