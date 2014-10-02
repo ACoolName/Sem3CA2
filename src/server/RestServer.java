@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 public class RestServer {
 
     static int port = 8080;
-    static String ip = "127.0.0.1";
+    static String ip = "localhost";
     static String publicFolder = "src/htmlFiles/";
     static String startFile = "index.html";
     static String filesUri = "/pages";
@@ -48,6 +48,7 @@ public class RestServer {
         facade = new ServerFacadeDB();
         gson = new Gson();
         server.start();
+        System.out.println("Server started. Listening on port " + port);
     }
 
     public static void main(String[] args) throws Exception {
@@ -195,7 +196,7 @@ public class RestServer {
             String errorMsg = null;
             byte[] bytesToSend = "<h1>Internal Error </h1><p>We are sorry. The server encountered an unexpected problem</p>".getBytes();
             String mime = null;
-
+            System.out.println("into file handler");
             String requestedFile = he.getRequestURI().toString();
             String f = requestedFile.substring(requestedFile.lastIndexOf("/") + 1);
             try {

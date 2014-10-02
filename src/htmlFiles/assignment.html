@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Assignment</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="javascript.js"></script>
+        <script>
+            $(document).ready(function() {
+                fetchAll();
+                setInterval(fetchAll, 1000);
+                initSaveBtn();
+                deletePerson();
+            });
+        </script>
+    </head>
+    <body >
+        <div id="details">
+            <div><label>First Name</label><input id="fname" type="text"/></div>
+            <div><label>Last Name</label><input id="lname" type="text"/></div>
+            <div><label>Email</label><input id="email" type="text"/></div>
+            <div><label>Phone</label><input id="phone" type="text"/></div>
+            <button id="btn_add">Add Person</button>
+        </div>
+        <div id="deleteDiv">
+            <button id="delete">Delete Selected</button>
+        </div>
+        <div>
+            <select id="persons" size="2" style="min-width: 100%;height: 400px;">
+            </select>
+        </div>
+    </body>
+</html>
