@@ -1,12 +1,14 @@
 package dto;
 
+import entity.Student;
+
 public class StudentDTO extends RoleSchoolDTO {
     
     private String semester;
 
-    public StudentDTO(Long id, String roleName, String semester) {
-        super(id, roleName);
-        this.semester = semester;
+    public StudentDTO(Student s) {
+        super(s.getId(), s.getRoleName());
+        this.semester = s.getSemester();
     }
 
 }

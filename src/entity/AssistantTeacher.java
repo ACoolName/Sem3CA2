@@ -18,7 +18,7 @@ public class AssistantTeacher extends RoleSchool {
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToMany(mappedBy = "assistents")
+    @ManyToMany(mappedBy = "assistants")
     private List<Course> assists = new ArrayList();
 
     public List<Course> getAssists() {

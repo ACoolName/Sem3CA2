@@ -1,6 +1,7 @@
 package facades;
 
 import com.google.gson.Gson;
+import dto.CourseDTO;
 import dto.PersonDTO;
 import entity.AssistantTeacher;
 import entity.Course;
@@ -21,8 +22,8 @@ import javax.persistence.Persistence;
 
 public class ServerFacadeDB implements ServerFacade {
 
-    EntityManager em;
-    Gson gson = new Gson();
+    private EntityManager em;
+    private Gson gson = new Gson();
 
     public ServerFacadeDB() {
         em = createEntityManager();
@@ -40,10 +41,12 @@ public class ServerFacadeDB implements ServerFacade {
 
     @Override
     public Person addPerson(String json) {
-        Person p = gson.fromJson(json, Person.class);
-
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
+        System.out.println(transaction.isActive());
+        Person p = gson.fromJson(json, Person.class);
+
+        
         try {
             em.persist(p);
             transaction.commit();
@@ -56,7 +59,13 @@ public class ServerFacadeDB implements ServerFacade {
 
     @Override
     public String getPersons() {
-        return gson.toJson(em.createNamedQuery("Person.findAll", Person.class).getResultList());
+        List<Person> people = em.createNamedQuery("Person.findAll",
+                Person.class).getResultList();
+        List<PersonDTO> dtoPeople = new ArrayList();
+        for (Person p : people) {
+            dtoPeople.add(new PersonDTO(p));
+        }
+        return gson.toJson(dtoPeople);
     }
 
     @Override
@@ -116,47 +125,52 @@ public class ServerFacadeDB implements ServerFacade {
     }
 
     @Override
-    public Course addCourse(String json, long personID, long roleSchoolID, String roleName) throws NotFoundException, InvalidCourseException {
-        Course c = gson.fromJson(json, Course.class);
-        Person p = em.find(Person.class, personID);
-        System.out.println("HERE123");
-        boolean hasTheRole = false;
-        for (RoleSchool r : p.getRoles()) {
-            if (r.getRoleName().equals(roleName)) {
-                hasTheRole = true;
-                switch (roleName) {
-                    case "Student":
-                        Student temp = em.find(Student.class, r.getId()); //this returns null 
-                        temp.addCourse(c);
-                        c.addStudent(temp);
-                        System.out.println("HERE");
-                        break;
-                    case "Teacher":
-                        //RoleSchool temp = em.find(Teacher.class, roleSchoolID);
-                        Teacher t = (Teacher) r;
-                        t.addCourse(c);
-                        c.addTeacher(t);
-                        break;
-                    case "AssistantTeacher":
-                        //RoleSchool temp = em.find(RoleSchool.class, roleSchoolID);
-                        AssistantTeacher as = (AssistantTeacher) r;
-                        as.addCourse(c);
-                        c.addAssistantTeacher(as);
-                        break;
-                    default:
-                        break;
-                }
-            }
+    public Course addPersonToCourse(long courseId, long personId, long roleSchoolId,
+            String roleName) throws NotFoundException, InvalidCourseException,
+            InvalidRole {
+        Course c = em.find(Course.class, courseId);
+        Person p = em.find(Person.class, personId);
+        RoleSchool r = p.getRole(roleName);
+        if(r == null) throw new InvalidRole("Person doesn't have that role");
+        switch (roleName) {
+            case "Student":
+                Student s = em.find(Student.class, r.getId()); //this returns null 
+                s.addCourse(c);
+                c.addStudent(s);
+                break;
+            case "Teacher":
+                Teacher t = em.find(Teacher.class, roleSchoolId);
+                t.addCourse(c);
+                c.addTeacher(t);
+                break;
+            case "AssistantTeacher":
+                AssistantTeacher as = em.find(AssistantTeacher.class, roleSchoolId);
+                as.addCourse(c);
+                c.addAssistantTeacher(as);
+                break;
+            default:
+                break;
         }
-        if (hasTheRole) {
-            EntityTransaction transaction = em.getTransaction();
-            transaction.begin();
-            try {
-                em.persist(c);
-                transaction.commit();
-            } catch (Exception e) {
-                transaction.rollback();
-            }
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+        }
+        return c;
+    }
+
+    @Override
+    public Course addCourse(String json) throws NotFoundException, InvalidCourseException {
+        Course c = gson.fromJson(json, Course.class);
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            em.persist(c);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
         }
 
         return c;
@@ -166,10 +180,31 @@ public class ServerFacadeDB implements ServerFacade {
     public String getCourses() {
         List<Course> courses = em.createNamedQuery("Course.findAll",
                 Course.class).getResultList();
+        List<CourseDTO> dtoCourses = new ArrayList();
         for (Course c : courses) {
-            c.getStudents().remove(0);
+            dtoCourses.add(new CourseDTO(c));
         }
-        return gson.toJson(courses);
+        return gson.toJson(dtoCourses);
+    }
+
+    @Override
+    public String getRole(long personId, String roleName) throws InvalidRole {
+        if(isValidRole(roleName))
+            throw new InvalidRole(roleName + " is invalid role");
+        Person person = em.find(Person.class, personId);
+        RoleSchool r = person.getRole(roleName);
+        if(r == null) throw new InvalidRole("Person doesn't have that role");
+        return gson.toJson(r);
+    }
+
+    @Override
+    public String getRoles(long personId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private boolean isValidRole(String roleName) {
+        return roleName.equals("Student") || roleName.equals("Teacher") || 
+                roleName.equals("AssistantTeacher");
     }
 
 }

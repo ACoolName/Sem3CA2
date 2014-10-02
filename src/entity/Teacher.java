@@ -48,6 +48,8 @@ public class Teacher extends RoleSchool {
     public void setDegree(String degree) {
         this.degree = degree;
     }
+    
+    
 
     @Override
     public String toString() {

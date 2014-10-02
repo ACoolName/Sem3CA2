@@ -1,5 +1,7 @@
 package dto;
 
+import entity.Course;
+
 public class CourseDTO {
 
     private Long id;
@@ -11,4 +13,12 @@ public class CourseDTO {
         this.name = name;
         this.description = description;
     }
+
+    public CourseDTO(Course c) {
+        this.id = c.getId();
+        this.name = c.getName();
+        this.description = c.getDescription();
+    }
+    
+    
 }

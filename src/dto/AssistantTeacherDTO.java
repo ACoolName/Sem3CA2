@@ -1,8 +1,10 @@
 package dto;
 
+import entity.AssistantTeacher;
+
 public class AssistantTeacherDTO extends RoleSchoolDTO {
 
-    public AssistantTeacherDTO(Long id, String roleName) {
-        super(id, roleName);
+    public AssistantTeacherDTO(AssistantTeacher at) {
+        super(at.getId(), at.getRoleName());
     }
 }

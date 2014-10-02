@@ -38,7 +38,6 @@ public class Course implements Serializable {
                 @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {
                 @JoinColumn(name = "STUDENT_ID", referencedColumnName = "ID")})
-
     private List<Student> students = new ArrayList();
 
     @ManyToMany
@@ -47,7 +46,6 @@ public class Course implements Serializable {
                 @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {
                 @JoinColumn(name = "TEACHER_ID", referencedColumnName = "ID")})
-
     private List<Teacher> taughtBy = new ArrayList();
 
     @ManyToMany
@@ -56,8 +54,7 @@ public class Course implements Serializable {
                 @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID")},
             inverseJoinColumns = {
                 @JoinColumn(name = "ASSTEACHER_ID", referencedColumnName = "ID")})
-
-    private List<AssistantTeacher> assistents = new ArrayList();
+    private List<AssistantTeacher> assistants = new ArrayList();
     
     public Course() {
     }
@@ -79,11 +76,11 @@ public class Course implements Serializable {
     }
 
     public List<AssistantTeacher> getAssistents() {
-        return assistents;
+        return assistants;
     }
 
     public void setAssistents(List<AssistantTeacher> assistents) {
-        this.assistents = assistents;
+        this.assistants = assistents;
     }
     
     public Course(String name, String description) {
@@ -100,7 +97,7 @@ public class Course implements Serializable {
     }
 
     public void addAssistantTeacher(AssistantTeacher at) {
-        assistents.add(at);
+        assistants.add(at);
     }
 
     public Long getId() {
@@ -111,6 +108,22 @@ public class Course implements Serializable {
         this.id = id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     @Override
     public String toString() {
         return "Course{" + "id=" + id + ", name=" + name + ", description=" + description + '}';

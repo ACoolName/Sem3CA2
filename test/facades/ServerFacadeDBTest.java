@@ -32,22 +32,23 @@ public class ServerFacadeDBTest {
         EntityManagerFactory emf
                 = Persistence.createEntityManagerFactory("Sem3CA2PU");
         em = emf.createEntityManager();
-        facade = new ServerFacadeDB(em);
+        facade = new ServerFacadeDB();
     }
 
     @BeforeClass
     public static void init() {
+
     }
 
     @Before
     public void setUp() {
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        em.createNativeQuery("DELETE FROM PERSON_ROLESCHOOL").executeUpdate();
-        em.createNativeQuery("DELETE FROM COURSE").executeUpdate();
-        em.createNativeQuery("DELETE FROM ROLESCHOOL").executeUpdate();
-        em.createNativeQuery("DELETE FROM PERSON").executeUpdate();
-        transaction.commit();
+//        EntityTransaction transaction = em.getTransaction();
+//        transaction.begin();
+//        em.createNativeQuery("DELETE FROM PERSON_ROLESCHOOL").executeUpdate();
+//        em.createNativeQuery("DELETE FROM COURSE").executeUpdate();
+//        em.createNativeQuery("DELETE FROM ROLESCHOOL").executeUpdate();
+//        em.createNativeQuery("DELETE FROM PERSON").executeUpdate();
+//        transaction.commit();
     }
 
     @Test
@@ -117,10 +118,12 @@ public class ServerFacadeDBTest {
         persons = gson.fromJson(facade.getPersons(),
                 new TypeToken<List<Person>>() {
                 }.getType());
-        System.out.println(persons.get(0).getRoles().get(0));
+        Student student = gson.fromJson(facade.getRole(persons.get(0).getId(), "Student"),
+                Student.class);
+        System.out.println(student);
         Course c = new Course("lol", "THIS IS NOT WORKING!");
         c.setId(23l);
-        facade.addCourse(gson.toJson(c), persons.get(0).getId(), persons.get(0).getRoles().get(0).getId(), "Student"); //This needs to be revised ! 
+        facade.addCourse(gson.toJson(c)); //This needs to be revised ! 
         List<Course> courses = gson.fromJson(facade.getCourses(), new TypeToken<List<Course>>() {
         }.getType());
         System.out.println(courses.size());
