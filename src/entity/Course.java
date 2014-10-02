@@ -56,9 +56,6 @@ public class Course implements Serializable {
 
     private List<AssistantTeacher> assistents = new ArrayList();
     
-    @OneToMany(mappedBy = "course")
-    private List<TimeBlock> timeBlocks= new ArrayList();
-
     public Course() {
     }
 

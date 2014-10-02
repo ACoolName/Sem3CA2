@@ -7,9 +7,6 @@
     <class>entity.Student</class>
     <class>entity.AssistantTeacher</class>
     <class>entity.Course</class>
-    <class>entity.BusinessAcademy</class>
-    <class>entity.ClassRoom</class>
-    <class>entity.TimeBlock</class>
     <class>entity.RoleSchool</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/CA2db"/>
