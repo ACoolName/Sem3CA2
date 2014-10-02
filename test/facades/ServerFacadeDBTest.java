@@ -29,12 +29,12 @@ public class ServerFacadeDBTest {
     private static EntityManager em;
 
     public ServerFacadeDBTest() {
-         EntityManagerFactory emf
+        EntityManagerFactory emf
                 = Persistence.createEntityManagerFactory("Sem3CA2PU");
         em = emf.createEntityManager();
         facade = new ServerFacadeDB(em);
     }
-    
+
     @BeforeClass
     public static void init() {
     }
@@ -55,7 +55,8 @@ public class ServerFacadeDBTest {
         Person p = new Person("a", "b", "c", "d");
         facade.addPerson(gson.toJson(p));
         List<Person> persons = gson.fromJson(facade.getPersons(),
-                new TypeToken<List<Person>>(){}.getType());
+                new TypeToken<List<Person>>() {
+                }.getType());
         assertEquals(persons.get(0).getFirstName(), "a");
     }
 
@@ -95,13 +96,15 @@ public class ServerFacadeDBTest {
         facade.addPerson(gson.toJson(p));
         Student s = new Student("asddd");
         List<Person> persons = gson.fromJson(facade.getPersons(),
-                new TypeToken<List<Person>>(){}.getType());
+                new TypeToken<List<Person>>() {
+                }.getType());
         facade.addRoleToPerson(gson.toJson(s), persons.get(0).getId());
         persons = gson.fromJson(facade.getPersons(),
-                new TypeToken<List<Person>>(){}.getType());
+                new TypeToken<List<Person>>() {
+                }.getType());
         assertEquals(persons.get(0).getRoles().get(0).getRoleName(), "Student");
     }
-    
+
     @Test
     public void testAddCourse() throws NotFoundException, InvalidCourseException, InvalidRole {
         Person p = new Person("a", "b", "c", "d");
@@ -114,11 +117,12 @@ public class ServerFacadeDBTest {
         persons = gson.fromJson(facade.getPersons(),
                 new TypeToken<List<Person>>() {
                 }.getType());
-        persons.get(0).getRoles().get(0).setId(1l);
+        System.out.println(persons.get(0).getRoles().get(0));
         Course c = new Course("lol", "THIS IS NOT WORKING!");
         c.setId(23l);
-         facade.addCourse(gson.toJson(c), persons.get(0).getId(), persons.get(0).getRoles().get(0).getId(), "Student"); //This needs to be revised ! 
-       List<Course> courses = gson.fromJson(facade.getCourses(), new TypeToken<List<Course>>(){}.getType());
+        facade.addCourse(gson.toJson(c), persons.get(0).getId(), persons.get(0).getRoles().get(0).getId(), "Student"); //This needs to be revised ! 
+        List<Course> courses = gson.fromJson(facade.getCourses(), new TypeToken<List<Course>>() {
+        }.getType());
         System.out.println(courses.size());
         //gets size of courses = 0
         assertEquals(courses.get(0).getStudents().get(0).getRoleName(), "Student");
