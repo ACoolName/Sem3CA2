@@ -15,9 +15,9 @@ public interface ServerFacade {
     String getPerson(long id) throws NotFoundException;
 
     Person addPerson(String json);
-    
+
     String getRole(long personId, String roleName) throws InvalidRole, NotFoundException;
-    
+
     String getRoles(long personId) throws NotFoundException;
 
     RoleSchool addRoleToPerson(String json, long id) throws NotFoundException,
@@ -27,16 +27,21 @@ public interface ServerFacade {
 
     Course addCourse(String json);
 
+    String getCourse(long courseId) throws InvalidCourseException;
+
+    String getCourses(long roleId, String roleName) throws InvalidRole,
+            NotFoundException;
+
     String getCourses();
 
     String addPersonToCourse(long courseId, long personId, long roleSchoolId,
             String roleName) throws NotFoundException, InvalidCourseException,
             InvalidRole;
-    
+
     String getStudentsInCourse(long courseId) throws NotFoundException;
-    
+
     String getAssistantTeachersInCourse(long courseId) throws NotFoundException;
-    
+
     String getTeachersInCourse(long courseId) throws NotFoundException;
-    
+
 }

@@ -2,6 +2,7 @@ package facades;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dto.CourseDTO;
 import dto.PersonDTO;
 import dto.RoleSchoolDTO;
 import entity.Course;
@@ -103,16 +104,10 @@ public class ServerFacadeDBTest {
     @Test
     public void testAddAndGetRoleToPerson() throws NotFoundException, InvalidRole {
         Person p = new Person("a", "b", "c", "d");
-        facade.addPerson(gson.toJson(p));
+        p = facade.addPerson(gson.toJson(p));
         Student s = new Student("asddd");
-        List<Person> persons = gson.fromJson(facade.getPersons(),
-                new TypeToken<List<Person>>() {
-                }.getType());
-        facade.addRoleToPerson(gson.toJson(s), persons.get(0).getId());
-        persons = gson.fromJson(facade.getPersons(),
-                new TypeToken<List<Person>>() {
-                }.getType());
-        Student student = gson.fromJson(facade.getRole(persons.get(0).getId(),
+        facade.addRoleToPerson(gson.toJson(s), p.getId());
+        Student student = gson.fromJson(facade.getRole(p.getId(),
                 "Student"), Student.class);
         assertEquals(student.getRoleName(), "Student"); //working !!! 
     }
@@ -125,6 +120,56 @@ public class ServerFacadeDBTest {
                 new TypeToken<List<Course>>() {
                 }.getType());
         assertEquals(courses.get(0).getDescription(), c.getDescription());
+    }
+
+    @Test
+    public void testGetCourseById() throws InvalidCourseException {
+        Course c = new Course("Single Course", "A good description");
+        c = facade.addCourse(gson.toJson(c));
+        c = gson.fromJson(facade.getCourse(c.getId()), Course.class);
+        assertEquals(c.getDescription(), c.getDescription());
+    }
+
+    @Test(expected = InvalidCourseException.class)
+    public void testGetCourseByIdNoSuchId() throws InvalidCourseException {
+        facade.getCourse(9999);
+    }
+
+    @Test(expected = InvalidRole.class)
+    public void testGetCoursesByRoleIdInvalidRole() throws InvalidCourseException,
+            InvalidRole, NotFoundException {
+        final long IRRELEVANT = 0;
+        facade.getCourses(IRRELEVANT, "Professor");
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void testGetCoursesByRoleIdNoSuchPerson() throws InvalidCourseException,
+            InvalidRole, NotFoundException {
+        facade.getCourses(99999, "Student");
+    }
+
+    @Test
+    public void testGetCoursesWithRoleId() throws InvalidRole, NotFoundException, InvalidCourseException {
+        Person p = new Person("a", "b", "c", "d");
+        p = facade.addPerson(gson.toJson(p));
+        Student s = new Student("asddd");
+        RoleSchool student = facade.addRoleToPerson(gson.toJson(s), p.getId());
+        Course c = new Course("Best Course", "Tobias course");
+        c = facade.addCourse(gson.toJson(c));
+        facade.addPersonToCourse(c.getId(), p.getId(), student.getId(), s.getRoleName());
+        List<CourseDTO> courses = gson.fromJson(facade.getCourses(student.getId(), "Student"),
+                new TypeToken<List<CourseDTO>>() {
+                }.getType());
+        assertEquals(courses.get(0).getDescription(), c.getDescription());
+    }
+    
+    @Test
+    public void testGetRole() throws InvalidRole, NotFoundException {
+        Person p = new Person("a", "b", "c", "d");
+        p = facade.addPerson(gson.toJson(p));
+        facade.addRoleToPerson(gson.toJson(new Student("first")), p.getId());
+        Student s = gson.fromJson(facade.getRole(p.getId(), "Student"), Student.class);
+        assertEquals(s.getSemester(), "first");
     }
 
     @Test(expected = NotFoundException.class)

@@ -69,7 +69,8 @@ public class ServerFacadeMockTest {
         Student s = new Student("asddd");
         facade.addRoleToPerson(gson.toJson(s), 0);
         p = gson.fromJson(facade.getPerson(0), Person.class);
-        assertEquals(p.getRoles().get(0).getRoleName(), "Student");
+        Student student = gson.fromJson(facade.getRole(p.getId(), "Student"), Student.class);
+        assertEquals(student.getRoleName(), "Student");
     }
 
     @After

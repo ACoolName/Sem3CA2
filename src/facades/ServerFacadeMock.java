@@ -2,6 +2,7 @@ package facades;
 
 import exceptions.NotFoundException;
 import com.google.gson.Gson;
+import dto.CourseDTO;
 import entity.AssistantTeacher;
 import entity.Course;
 import entity.Person;
@@ -21,11 +22,18 @@ public class ServerFacadeMock implements ServerFacade {
     Map<Long, Course> courses = new HashMap();
     private Long nextId;
     private Long nextRoleId;
+    private Long nextCourseId;
     private final Gson gson = new Gson();
 
     public ServerFacadeMock() {
         nextId = 0L;
         nextRoleId = 0L;
+        nextCourseId = 0L;
+    }
+
+    private boolean isValidRole(String roleName) {
+        return roleName.equals("Student") || roleName.equals("Teacher")
+                || roleName.equals("AssistantTeacher");
     }
 
     @Override
@@ -88,27 +96,58 @@ public class ServerFacadeMock implements ServerFacade {
 
     @Override
     public Course addCourse(String json) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Course c = gson.fromJson(json, Course.class);
+        c.setId(nextCourseId++);
+        courses.put(c.getId(), c);
+        return c;
     }
 
     @Override
     public String getCourses() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return gson.toJson(courses.values());
     }
 
     @Override
-    public String addPersonToCourse(long courseId, long personId, long roleSchoolId, String roleName) throws NotFoundException, InvalidCourseException, InvalidRole {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String addPersonToCourse(long courseId, long personId,
+            long roleSchoolId, String roleName) throws NotFoundException,
+            InvalidCourseException, InvalidRole {
+        if(!isValidRole(roleName)) throw new InvalidRole("No such role");
+        if (!persons.containsKey(personId)) {
+            throw new NotFoundException("No person with that id");
+        }
+        if(!courses.containsKey(courseId)) 
+            throw new InvalidCourseException("No course with that id");
+        Person p = persons.get(personId);
+        RoleSchool r = p.getRole(roleName);
+        Course c = courses.get(courseId);
+        switch (roleName) {
+            case "Student":
+                Student s = (Student) r;
+                c.addStudent(s);
+                s.addCourse(c);
+                break;
+            case "Teacher":
+                Teacher t = (Teacher) r;
+                c.addTeacher(t);
+                t.addCourse(c);
+                break;
+            default:
+                AssistantTeacher at = (AssistantTeacher) r;
+                c.addAssistantTeacher(at);
+                at.addCourse(c);
+                break;
+        }
+        return "Course added";
     }
 
     @Override
     public String getRole(long personId, String roleName) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return gson.toJson(persons.get(personId).getRole(roleName));
     }
 
     @Override
     public String getRoles(long personId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return gson.toJson(persons.get(personId).getRoles());
     }
 
     @Override
@@ -123,6 +162,16 @@ public class ServerFacadeMock implements ServerFacade {
 
     @Override
     public String getTeachersInCourse(long courseId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getCourse(long courseId) {
+        return gson.toJson(courses.get(courseId));
+    }
+
+    @Override
+    public String getCourses(long roleId, String roleName) throws InvalidRole, NotFoundException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
