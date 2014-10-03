@@ -1,0 +1,60 @@
+<html>
+<head>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+</head>
+
+<body>
+	<h1 align = "center">Goals</h1>
+	<p style="margin-right: 50px;">The goal of this CA was to create a web-site which
+           is capable of serving a Business Academy needs for keeping information for
+           people in the Academy. They are also assigned diffrent roles like Student or Teacher.
+           As additional goals courses and class rooms with time blocks should be added. The system
+           must also know about the relations between the diffrent "entities". Besides the web-site
+           as a front-end, it must use REST which calls JPA internally. The database used must be
+           Oracle. </p>
+	<h1 align = "center">Design description</h1>
+	<p>The project was split in relatively independent parts. From bottom to top we have the
+           a persistence.xml file which contains database specific details. It is read by JPA to persists the entity objects.
+	   In a separate package "entities" we have all Entity objects which respond to the tables, provide an ORM interface
+           for the upper layers and are handled by the entity manager from JPA. These objects must be presented as JSON so
+           a facade that makes the convertions and convinience methods is provided in the facades package. A "dto" package
+           is used by the facade to provide only what is "needed" to the upper layers. For example a Person contains a list of
+           roles, but it's not needed by the REST service so an intermediate DTO which does not contain the list is returned.
+           From there the REST server uses the facade to answer requests that hit the handler. The REST code itself is in the
+           "server" package. The web-site is served through a static content handler. The files themselfs are in htmlFiles.
+           Finally, the web-site has an index page which contains links for the github of the project, 
+           short description, this documentation and the "assigment" page. The assigment page uses ajax to the REST service. 
+        </p>
+	<h1 align = "center">Inheritance implementation and strategy</h1>
+	<p>We used inheritance for the RoleSchool class. The inheritance type is joined which is a strategy in which fields that are specific to a subclass are mapped to a separate table than the fields that are common to the parent class, and a join is performed to instantiate the subclass. The classes that inherit from RoleSchool are "Student" ,"Teacher" and "AssistentTeacher". In these classes we do not have an ID or the roleName since they are inherited from the parent class.</p>
+	<p>This strategy was suitable for us because it defines a table for each class in the inheritance hierarchy to store the local attributes of that class.</p>
+
+	<h1 align = "center">How far are we with the project</h1>
+	<p>Besides the basic functionality of the program from points 1-7 we have added all the entities needed for future development so every data structure is present. Because of the time pressure we only managed to add the course functionality so far. Every student, teacher and assistant teacher can be enrolled to a course and a course can be assigned to any of them. In this project we focused on the functionality of the program so in order to ensure that everything works we created at least one test for every method. We treated the exceptions that the methods could throw and we also tested them. </p>
+
+	<h1 align = "center"> Who did what</h1>
+	<div>
+	<p>In this project we agreed that pair programming is the best way to code but we also had individually work. When we were at school, we worked in pairs but when we got home everybody was working individually. </p>
+	<p>Teodor and Martin worked on html, javascript, RestServer while Raul and Tobias worked on entities,dtos, facade, and interface. Everyone tested what they had worked on.</p>
+	<p>For more info about who did what in particular please follow the project on github. Our usernames are as follow: 
+	<ul>
+	<li>sallas = Tobias </li>
+	<li>TeodorDumitru = Teodor</li>
+	<li>Unskipp = Raul</li>
+	<li>marto1 = Martin;</li>
+	</ul>
+	</p>
+	<p><h4>Please read the comments in the commits because Raul for example has a problem with his username on github and his commits are not registered in the contributors.</h4> </p>
+	</div>
+
+
+
+	<div>
+	<h1 align = "center"> Testing</h1>
+	<p>When it comes to testing, our strategy was unit testing.We tested as much as we could for as much functionality as possible. We have a lot of tests to find all the possible exceptions and errors and also to ensure that everything has the expected result.
+	</p>
+	</div> 
+
+</body>
+
+</html>

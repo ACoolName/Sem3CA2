@@ -45,7 +45,7 @@ public class RestServer {
         //REST Routes
         server.createContext("/person", new HandlerPerson());
         server.createContext("/role", new HandlerRole());
-        server.createContext("/course", new HandlerCourse());
+//        server.createContext("/course", new HandlerCourse());
         //HTTP Server Routes
         server.createContext(filesUri, new HandlerFileServer());
         facade = new ServerFacadeDB();
@@ -82,62 +82,62 @@ public class RestServer {
         this.facade = facade;
     }
 
-    private class HandlerCourse implements HttpHandler {
-
-        public HandlerCourse() {
-        }
-
-        @Override
-        public void handle(HttpExchange he) throws IOException {
-            int status = 200;
-            String response = "";
-            String method = he.getRequestMethod().toUpperCase();
-            switch (method) {
-                case "GET":
-                    try {
-                        response = handleGet(he);
-                    } catch (NumberFormatException nfe) {
-                        response = "Id is not a number";
-                        status = 404;
-                    } catch (    NotFoundException | InvalidRole nfe) {
-                        response = nfe.getMessage();
-                        status = 404;
-                    }
-                    break;
-                case "POST":
-                    break;
-                case "PUT":
-                    break;
-                case "DELETE":
-                    break;
-            }
-            if (status == 200) {
-                he.getResponseHeaders().add("Content-Type", "application/json");
-            } else {
-                he.getResponseHeaders().add("Content-Type", "text/plain");
-            }
-            he.sendResponseHeaders(status, 0);
-            try (OutputStream os = he.getResponseBody()) {
-                os.write(response.getBytes());
-            }
-
-        }
-
-        private String handleGet(HttpExchange he) throws NotFoundException, InvalidRole {
-            String response = "";
-            String path = he.getRequestURI().getPath();
-            int lastIndex = path.lastIndexOf("/");
-            if (lastIndex > 0) {
-                String idStr = path.substring(lastIndex + 1);
-                int id = Integer.parseInt(idStr);
-                response = facade.getRoles(id);
-            } else {
-                //
-            }
-            return response;
-        }
-
-    }
+//    private class HandlerCourse implements HttpHandler {
+//
+//        public HandlerCourse() {
+//        }
+//
+//        @Override
+//        public void handle(HttpExchange he) throws IOException {
+//            int status = 200;
+//            String response = "";
+//            String method = he.getRequestMethod().toUpperCase();
+//            switch (method) {
+//                case "GET":
+//                    try {
+//                        response = handleGet(he);
+//                    } catch (NumberFormatException nfe) {
+//                        response = "Id is not a number";
+//                        status = 404;
+//                    } catch (    NotFoundException | InvalidRole nfe) {
+//                        response = nfe.getMessage();
+//                        status = 404;
+//                    }
+//                    break;
+//                case "POST":
+//                    break;
+//                case "PUT":
+//                    break;
+//                case "DELETE":
+//                    break;
+//            }
+//            if (status == 200) {
+//                he.getResponseHeaders().add("Content-Type", "application/json");
+//            } else {
+//                he.getResponseHeaders().add("Content-Type", "text/plain");
+//            }
+//            he.sendResponseHeaders(status, 0);
+//            try (OutputStream os = he.getResponseBody()) {
+//                os.write(response.getBytes());
+//            }
+//
+//        }
+//
+//        private String handleGet(HttpExchange he) throws NotFoundException, InvalidRole {
+//            String response = "";
+//            String path = he.getRequestURI().getPath();
+//            int lastIndex = path.lastIndexOf("/");
+//            if (lastIndex > 0) {
+//                String idStr = path.substring(lastIndex + 1);
+//                int id = Integer.parseInt(idStr);
+//                response = facade.getRoles(id);
+//            } else {
+//                //
+//            }
+//            return response;
+//        }
+//
+//    }
 
     class HandlerPerson implements HttpHandler {
 
