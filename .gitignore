@@ -8,3 +8,5 @@ nbproject/project.properties
 .gitignore
 src/META-INF/persistence.xml
 nbproject/project.properties
+src/META-INF/persistence.xml
+nbproject/project.properties
