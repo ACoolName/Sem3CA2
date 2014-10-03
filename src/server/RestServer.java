@@ -97,7 +97,6 @@ public class RestServer {
                         response = "Id is not a number";
                         status = 404;
                     } catch (NotFoundException nfe) {
-                        System.out.println("NotFound thrown");
                         response = nfe.getMessage();
                         status = 404;
                     }
@@ -129,10 +128,8 @@ public class RestServer {
             }
             if (status == 200) {
                 he.getResponseHeaders().add("Content-Type", "application/json");
-                System.out.println("content json");
             } else {
                 he.getResponseHeaders().add("Content-Type", "text/plain");
-                System.out.println("content text");
             }
             he.sendResponseHeaders(status, 0);
             try (OutputStream os = he.getResponseBody()) {
@@ -196,14 +193,12 @@ public class RestServer {
             String errorMsg = null;
             byte[] bytesToSend = "<h1>Internal Error </h1><p>We are sorry. The server encountered an unexpected problem</p>".getBytes();
             String mime = null;
-            System.out.println("into file handler");
             String requestedFile = he.getRequestURI().toString();
             String f = requestedFile.substring(requestedFile.lastIndexOf("/") + 1);
             try {
                 String extension = f.substring(f.lastIndexOf("."));
                 mime = getMime(extension);
                 File file = new File(publicFolder + f);
-                System.out.println(publicFolder + f);
                 bytesToSend = new byte[(int) file.length()];
                 BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
                 bis.read(bytesToSend, 0, bytesToSend.length);
@@ -253,6 +248,7 @@ public class RestServer {
 
         @Override
         public void handle(HttpExchange he) throws IOException {
+            System.out.println("role handler class");
             int status = 200;
             String response = "";
             String method = he.getRequestMethod().toUpperCase();
@@ -289,8 +285,10 @@ public class RestServer {
             InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
             BufferedReader br = new BufferedReader(isr);
             String jsonQuery = br.readLine();
+            System.out.println("jsonQuery " + jsonQuery);
             String response = "";
             if (jsonQuery.contains("<") || jsonQuery.contains(">")) {
+                System.out.println("Illegal characters");
                 throw new IllegalArgumentException("Illegal characters in input");
             }
             RoleSchoolAndPersonId roleAndId = gson.fromJson(jsonQuery, RoleSchoolAndPersonId.class);
