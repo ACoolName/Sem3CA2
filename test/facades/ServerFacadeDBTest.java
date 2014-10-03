@@ -108,6 +108,7 @@ public class ServerFacadeDBTest {
         List<Person> persons = gson.fromJson(facade.getPersons(),
                 new TypeToken<List<Person>>() {
                 }.getType());
+        System.out.println("json:" + gson.toJson(s));
         facade.addRoleToPerson(gson.toJson(s), persons.get(0).getId());
         persons = gson.fromJson(facade.getPersons(),
                 new TypeToken<List<Person>>() {

@@ -127,7 +127,7 @@ function updateDetailsRoles(id) {
     $.ajax({
         url: "../role/" + id,
         type: "GET",
-        dataType: 'json',
+        dataType: "json",
         error: function(jqXHR, textStatus, errorThrown) {
             alert(textStatus + " shit " + errorThrown);
         }
@@ -140,13 +140,17 @@ function updateDetailsRoles(id) {
             console.log("FOR EACH!!" + role.roleName);
             switch (role.roleName) {
                 case "Teacher":
+                    console.log("--------------" + role.degree);
                     options += "<option id=role_" + role.id + "> Role Name: " + role.roleName
                             + ", Degree: " + role.degree + "</option>";
+                    break;
                 case "Student":
                     options += "<option id=role_" + role.id + "> Role Name: " + role.roleName
                             + ", Semester: " + role.semester + "</option>";
+                    break;
                 case "AssistantTeacher":
                     options += "<option id=role_" + role.id + "> Role Name: " + role.roleName + "</option>";
+                    break;
             }
             if (typeof selected !== 'undefined') {
                 if (parseInt(role.id) === parseInt(extractId(selected.id))) {
@@ -177,34 +181,28 @@ function initAddRole() {
         var personsDocument = document.getElementById("persons");
         var selected = personsDocument.options[personsDocument.selectedIndex];
         updateDetails(extractId(selected.id));
-        var id = $("#id").val();
+        var id = extractId(selected.id);
+        console.log("blaaa" + id);
         if ($("#role").val() === "AssistantTeacher") {
             var role = {
-                id: "0",
                 roleName: $("#role").val()
             };
         }
         if ($("#role").val() === "Teacher") {
             var role = {
-                id: "0",
                 roleName: $("#role").val(),
                 degree: $("#roleInput").val()
             };
         }
         if ($("#role").val() === "Student") {
             var role = {
-                id: "0",
                 roleName: $("#role").val(),
                 semester: $("#roleInput").val()
             };
         }
-        var newPersonAndRole = {
-            personId: id,
-            role: role
-        };
         $.ajax({
-            url: "../role",
-            data: JSON.stringify(newPersonAndRole),
+            url: "../role/" + id,
+            data: JSON.stringify(role),
             type: "post",
             dataType: 'json',
             error: function(jqXHR, textStatus, errorThrown) {

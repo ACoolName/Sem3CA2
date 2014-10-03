@@ -138,7 +138,6 @@ public class RestServer {
 //        }
 //
 //    }
-
     class HandlerPerson implements HttpHandler {
 
         public HandlerPerson() {
@@ -354,22 +353,29 @@ public class RestServer {
 
         private String handlePost(HttpExchange he) throws UnsupportedEncodingException, IOException, NotFoundException, InvalidRole {
             InputStreamReader isr = new InputStreamReader(he.getRequestBody(), "utf-8");
-            BufferedReader br = new BufferedReader(isr);
-            String jsonQuery = br.readLine();
-            System.out.println("jsonQuery " + jsonQuery);
-            String response = "";
-            if (jsonQuery.contains("<") || jsonQuery.contains(">")) {
-                System.out.println("Illegal characters");
-                throw new IllegalArgumentException("Illegal characters in input");
+            String path = he.getRequestURI().getPath();
+            int lastIndex = path.lastIndexOf("/");
+            if (lastIndex > 0) {
+                String idStr = path.substring(lastIndex + 1);
+                BufferedReader br = new BufferedReader(isr);
+                String jsonQuery = br.readLine();
+                System.out.println("jsonQuery " + jsonQuery);
+                String response = "";
+                if (jsonQuery.contains("<") || jsonQuery.contains(">")) {
+                    System.out.println("Illegal characters");
+                    throw new IllegalArgumentException("Illegal characters in input");
+                }
+                //RoleSchoolAndPersonId roleAndId = gson.fromJson(jsonQuery, RoleSchoolAndPersonId.class);
+                System.out.println("BIG SHIT:" + idStr);
+                JsonParser parser = new JsonParser();
+                JsonObject obj = parser.parse(jsonQuery).getAsJsonObject();
+                String role2 = obj.get("roleName").toString();
+                RoleSchool role = facade.addRoleToPerson(jsonQuery, Integer.parseInt(idStr));
+                response = gson.toJson(role, RoleSchool.class);
+                return response;
             }
-            RoleSchoolAndPersonId roleAndId = gson.fromJson(jsonQuery, RoleSchoolAndPersonId.class);
-            System.out.println(roleAndId.getRole());
-            JsonParser parser = new JsonParser();
-            JsonObject obj = parser.parse(jsonQuery).getAsJsonObject();
-            String role2 = obj.get("role").toString();
-            RoleSchool role = facade.addRoleToPerson(role2, roleAndId.getPersonId());
-            response = gson.toJson(role, RoleSchool.class);
-            return response;
+            return "";
+
         }
 
         private String handleGet(HttpExchange he) throws NotFoundException {
