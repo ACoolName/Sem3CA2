@@ -41,31 +41,32 @@ function initAddRole() {
         updateDetails(extractId(selected.id));
         var id = $("#id").val();
         if ($("#role").val() === "Assistant Teacher") {
-            var RoleSchool = {
-                id: 0,
+            var role = {
+                id: "0",
                 roleName: $("#role").val()
             };
         }
         if ($("#role").val() === "Teacher") {
-            var RoleSchool = {
-                id: 0,
+            var role = {
+                id: "0",
                 roleName: $("#role").val(),
                 degree: $("#roleInput").val()
             };
         }
         if ($("#role").val() === "Student") {
-            var RoleSchool = {
-                id: 0,
+            var role = {
+                id: "0",
                 roleName: $("#role").val(),
                 semester: $("#roleInput").val()
             };
         }
         var newPersonAndRole = {
             personId: id,
-            RoleSchool: RoleSchool
+            role: role
         };
         $.ajax({
             url: "../role",
+//            data: JSON.stringify(newPersonAndRole),
             data: JSON.stringify(newPersonAndRole),
             type: "post",
             dataType: 'json',
