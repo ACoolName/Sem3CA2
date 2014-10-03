@@ -1,4 +1,4 @@
-    
+
 function initSaveBtn() {
     $("#btn_add").click(function() {
         //First create post argument as a JavaScript object
@@ -25,6 +25,143 @@ function initSaveBtn() {
     });
 }
 
+function initSelect() {
+    $('#role').on('change', function(e) {
+        var valueSelected = this.value;
+        if (valueSelected === "AssistantTeacher") {
+            console.log("hide" + valueSelected);
+            $('#roleInput').hide();
+            $('#roleInput').value = '';
+        } else {
+            console.log("show" + valueSelected);
+            $('#roleInput').show();
+        }
+    });
+}
+
+function initViewRoles() {
+    $("#btn_viewRole").click(function(e) {
+        console.log($("#btn_viewRole").html());
+        if ($("#btn_viewRole").html() === "View Role")
+        {
+            var personsDocument = document.getElementById("persons");
+            var selected = personsDocument.options[personsDocument.selectedIndex];
+            var id = extractId(selected.id);
+            if (isNaN(id)) {
+                return;
+            }
+            $("#persons").hide();
+            $("#roles").show();
+            $("#btn_viewRole").html("View Courses");
+            updateDetailsRoles(id);
+        }
+        else if ($("#btn_viewRole").html() === "View Courses")
+        {
+            $("#roles").hide();
+            $("#courses").show();
+            $("#btn_viewRole").html("View Persons");
+            var personsDocument = document.getElementById("roles");
+            var selected = personsDocument.options[personsDocument.selectedIndex];
+            var id = selected.id;
+            if (isNaN(id)) {
+                return;
+            }
+            updateDetailsCourses(id);
+        }
+        else if ($("#btn_viewRole").html() === "View Persons")
+        {
+            $("#courses").hide();
+            $("#persons").show();
+            $("#btn_viewRole").html("View Role");
+        }
+    });
+}
+
+function updateDetailsCourses(id){
+    console.log("Beginning of updateCourses")
+    var personsDocument = document.getElementById("roles");
+    var reselect = -1;
+    var index = 0;
+    $.ajax({
+        url: "../role/" + id,
+        type: "GET",
+        dataType: 'json',
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(textStatus + " shit " + errorThrown);
+        }
+    }).done(function(roles) {
+        var options = "";
+        var selected = personsDocument.options[personsDocument.selectedIndex];
+        roles.forEach(function(role) {
+            index++;
+            console.log("FOR EACH!!" + role.roleName);
+            switch (role.roleName) {
+                case "Teacher":
+                    options += "<option id=role_" + role.id + "> Role Name: " + role.roleName
+                            + ", Degree: " + role.degree + "</option>";
+                case "Student":
+                    options += "<option id=role_" + role.id + "> Role Name: " + role.roleName
+                            + ", Semester: " + role.semester + "</option>";
+                case "AssistantTeacher":
+                    options += "<option id=role_" + role.id + "> Role Name: " + role.roleName + "</option>";
+            }
+            if (typeof selected !== 'undefined') {
+                if (parseInt(role.id) === parseInt(extractId(selected.id))) {
+                    reselect = index;
+                }
+            }
+        });
+        $("#roles").html(options);
+        if (reselect !== -1) {
+            personsDocument.selectedIndex = reselect - 1;
+        }
+    }
+    );
+}
+
+function updateDetailsRoles(id) {
+    console.log("Beginning of updateRoles")
+    var personsDocument = document.getElementById("roles");
+    var reselect = -1;
+    var index = 0;
+    $.ajax({
+        url: "../role/" + id,
+        type: "GET",
+        dataType: 'json',
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(textStatus + " shit " + errorThrown);
+        }
+    }).done(function(roles) {
+        console.log("in the done")
+        var options = "";
+        var selected = personsDocument.options[personsDocument.selectedIndex];
+        roles.forEach(function(role) {
+            index++;
+            console.log("FOR EACH!!" + role.roleName);
+            switch (role.roleName) {
+                case "Teacher":
+                    options += "<option id=role_" + role.id + "> Role Name: " + role.roleName
+                            + ", Degree: " + role.degree + "</option>";
+                case "Student":
+                    options += "<option id=role_" + role.id + "> Role Name: " + role.roleName
+                            + ", Semester: " + role.semester + "</option>";
+                case "AssistantTeacher":
+                    options += "<option id=role_" + role.id + "> Role Name: " + role.roleName + "</option>";
+            }
+            if (typeof selected !== 'undefined') {
+                if (parseInt(role.id) === parseInt(extractId(selected.id))) {
+                    reselect = index;
+                }
+            }
+        });
+        $("#roles").html(options);
+        if (reselect !== -1) {
+            personsDocument.selectedIndex = reselect - 1;
+        }
+    }
+    );
+}
+
 function initPersons() {
     $("#persons").click(function(e) {
         var id = e.target.id;
@@ -41,7 +178,7 @@ function initAddRole() {
         var selected = personsDocument.options[personsDocument.selectedIndex];
         updateDetails(extractId(selected.id));
         var id = $("#id").val();
-        if ($("#role").val() === "Assistant Teacher") {
+        if ($("#role").val() === "AssistantTeacher") {
             var role = {
                 id: "0",
                 roleName: $("#role").val()
@@ -67,7 +204,6 @@ function initAddRole() {
         };
         $.ajax({
             url: "../role",
-//            data: JSON.stringify(newPersonAndRole),
             data: JSON.stringify(newPersonAndRole),
             type: "post",
             dataType: 'json',
@@ -154,6 +290,3 @@ function fetchAll() {
         }
     });
 }
-
-
-

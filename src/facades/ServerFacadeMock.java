@@ -125,4 +125,9 @@ public class ServerFacadeMock implements ServerFacade {
     public String getTeachersInCourse(long courseId) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    @Override
+    public String getCourses(long personId) throws InvalidRole, NotFoundException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

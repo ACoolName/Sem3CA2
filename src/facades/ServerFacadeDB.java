@@ -98,10 +98,12 @@ public class ServerFacadeDB implements ServerFacade {
         } else if (r.getRoleName().equals("AssistantTeacher")) {
             r2 = gson.fromJson(json, AssistantTeacher.class);
         } else if (r.getRoleName().equals("Teacher")) {
+            System.out.println("role in if");
             r2 = gson.fromJson(json, Teacher.class);
         } else {
             throw new InvalidRole(r.getRoleName() + " isn't a valid role");
         }
+        System.out.println("role before adding: " + r2);
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         try {
@@ -222,13 +224,16 @@ public class ServerFacadeDB implements ServerFacade {
         } else {
             response = gson.toJson(new AssistantTeacherDTO((AssistantTeacher) r));
         }
+        System.out.println("-----------------response " + response);
         return response;
     }
 
     @Override
     public String getRoles(long personId) throws NotFoundException {
         Person p = em.find(Person.class, personId);
-        if (p == null) throw new NotFoundException("No person with that id");
+        if (p == null) {
+            throw new NotFoundException("No person with that id");
+        }
         Map<String, RoleSchool> m = p.getRoles();
         List<RoleSchoolDTO> roles = new ArrayList();
         for (Map.Entry<String, RoleSchool> entrySet : m.entrySet()) {
@@ -308,4 +313,44 @@ public class ServerFacadeDB implements ServerFacade {
         return gson.toJson(assTeachers);
     }
 
+    @Override
+    public String getCourses(long roleId) throws InvalidRole, NotFoundException {
+        RoleSchool r = em.find(RoleSchool.class, roleId);
+        String roleName = r.getRoleName();
+        if (!isValidRole(roleName)) {
+            throw new InvalidRole("No such role");
+        }
+        List<CourseDTO> dtoCourses = new ArrayList();
+        List<Course> courses;
+
+        if (r == null) {
+            throw new NotFoundException("No Such Role");
+        }
+        if (null != roleName) {
+            switch (roleName) {
+                case "Student":
+                    Student s = em.find(Student.class, roleId);
+                    courses = s.getEnrolled();
+                    for (Course course : courses) {
+                        dtoCourses.add(new CourseDTO(course));
+                    }
+                    break;
+                case "Teacher":
+                    Teacher t = em.find(Teacher.class, roleId);
+                    courses = t.getTeaches();
+                    for (Course course : courses) {
+                        dtoCourses.add(new CourseDTO(course));
+                    }
+                    break;
+                default:
+                    AssistantTeacher at = em.find(AssistantTeacher.class, roleId);
+                    courses = at.getAssists();
+                    for (Course course : courses) {
+                        dtoCourses.add(new CourseDTO(course));
+                    }
+                    break;
+            }
+        }
+        return gson.toJson(dtoCourses);
+    }
 }

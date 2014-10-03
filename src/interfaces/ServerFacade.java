@@ -18,6 +18,8 @@ public interface ServerFacade {
     
     String getRole(long personId, String roleName) throws InvalidRole, NotFoundException;
     
+    String getCourses(long personId) throws InvalidRole, NotFoundException;
+    
     String getRoles(long personId) throws NotFoundException;
 
     RoleSchool addRoleToPerson(String json, long id) throws NotFoundException,

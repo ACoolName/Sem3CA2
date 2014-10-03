@@ -2,6 +2,8 @@ package server;
 
 import auxiliary.RoleSchoolAndPersonId;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -43,6 +45,7 @@ public class RestServer {
         //REST Routes
         server.createContext("/person", new HandlerPerson());
         server.createContext("/role", new HandlerRole());
+        server.createContext("/course", new HandlerCourse());
         //HTTP Server Routes
         server.createContext(filesUri, new HandlerFileServer());
         facade = new ServerFacadeDB();
@@ -77,6 +80,63 @@ public class RestServer {
 
     public void setFacade(ServerFacade facade) {
         this.facade = facade;
+    }
+
+    private class HandlerCourse implements HttpHandler {
+
+        public HandlerCourse() {
+        }
+
+        @Override
+        public void handle(HttpExchange he) throws IOException {
+            int status = 200;
+            String response = "";
+            String method = he.getRequestMethod().toUpperCase();
+            switch (method) {
+                case "GET":
+                    try {
+                        response = handleGet(he);
+                    } catch (NumberFormatException nfe) {
+                        response = "Id is not a number";
+                        status = 404;
+                    } catch (    NotFoundException | InvalidRole nfe) {
+                        response = nfe.getMessage();
+                        status = 404;
+                    }
+                    break;
+                case "POST":
+                    break;
+                case "PUT":
+                    break;
+                case "DELETE":
+                    break;
+            }
+            if (status == 200) {
+                he.getResponseHeaders().add("Content-Type", "application/json");
+            } else {
+                he.getResponseHeaders().add("Content-Type", "text/plain");
+            }
+            he.sendResponseHeaders(status, 0);
+            try (OutputStream os = he.getResponseBody()) {
+                os.write(response.getBytes());
+            }
+
+        }
+
+        private String handleGet(HttpExchange he) throws NotFoundException, InvalidRole {
+            String response = "";
+            String path = he.getRequestURI().getPath();
+            int lastIndex = path.lastIndexOf("/");
+            if (lastIndex > 0) {
+                String idStr = path.substring(lastIndex + 1);
+                int id = Integer.parseInt(idStr);
+                response = facade.getRoles(id);
+            } else {
+                //
+            }
+            return response;
+        }
+
     }
 
     class HandlerPerson implements HttpHandler {
@@ -253,11 +313,10 @@ public class RestServer {
             String response = "";
             String method = he.getRequestMethod().toUpperCase();
             switch (method) {
-                case "GET":
-            {
-                try {
-                    response = handleGet(he);
-                }  catch (NumberFormatException nfe) {
+                case "GET": {
+                    try {
+                        response = handleGet(he);
+                    } catch (NumberFormatException nfe) {
                         response = "Id is not a number";
                         status = 404;
                     } catch (NotFoundException nfe) {
@@ -265,8 +324,8 @@ public class RestServer {
                         response = nfe.getMessage();
                         status = 404;
                     }
-                break;
-            }
+                    break;
+                }
                 case "POST":
                     try {
                         response = handlePost(he);
@@ -304,26 +363,27 @@ public class RestServer {
                 throw new IllegalArgumentException("Illegal characters in input");
             }
             RoleSchoolAndPersonId roleAndId = gson.fromJson(jsonQuery, RoleSchoolAndPersonId.class);
-            String jsonRole = gson.toJson(roleAndId.getRole());
-            RoleSchool role = facade.addRoleToPerson(jsonRole, roleAndId.getPersonId());
+            System.out.println(roleAndId.getRole());
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(jsonQuery).getAsJsonObject();
+            String role2 = obj.get("role").toString();
+            RoleSchool role = facade.addRoleToPerson(role2, roleAndId.getPersonId());
             response = gson.toJson(role, RoleSchool.class);
             return response;
         }
-        
-         private String handleGet(HttpExchange he) throws NotFoundException {
+
+        private String handleGet(HttpExchange he) throws NotFoundException {
             String response = "";
             String path = he.getRequestURI().getPath();
             int lastIndex = path.lastIndexOf("/");
-            if (lastIndex > 0) {  
+            if (lastIndex > 0) {
                 String idStr = path.substring(lastIndex + 1);
                 int id = Integer.parseInt(idStr);
-                //response = facade.getRole(port, response);
-            } else { 
-               //
+                System.out.println("-----------------------------------------------------------------------------------------" + id);
+                response = facade.getRoles(id);
+                System.out.println("-----------------------------------------------------------------------------------------" + response);
             }
             return response;
         }
-        
     }
-
 }
