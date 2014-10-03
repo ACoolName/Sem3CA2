@@ -97,7 +97,7 @@ public class ServerFacadeMock implements ServerFacade {
     }
 
     @Override
-    public Course addPersonToCourse(long courseId, long personId, long roleSchoolId, String roleName) throws NotFoundException, InvalidCourseException, InvalidRole {
+    public String addPersonToCourse(long courseId, long personId, long roleSchoolId, String roleName) throws NotFoundException, InvalidCourseException, InvalidRole {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -29,7 +29,7 @@ public interface ServerFacade {
 
     String getCourses();
 
-    Course addPersonToCourse(long courseId, long personId, long roleSchoolId,
+    String addPersonToCourse(long courseId, long personId, long roleSchoolId,
             String roleName) throws NotFoundException, InvalidCourseException,
             InvalidRole;
     

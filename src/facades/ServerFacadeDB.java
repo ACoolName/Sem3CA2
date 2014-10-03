@@ -130,7 +130,7 @@ public class ServerFacadeDB implements ServerFacade {
     }
 
     @Override
-    public Course addPersonToCourse(long courseId, long personId, long roleSchoolId,
+    public String addPersonToCourse(long courseId, long personId, long roleSchoolId,
             String roleName) throws NotFoundException, InvalidCourseException,
             InvalidRole {
         Course c = em.find(Course.class, courseId);
@@ -147,7 +147,7 @@ public class ServerFacadeDB implements ServerFacade {
         }
         switch (roleName) {
             case "Student":
-                Student s = em.find(Student.class, r.getId()); //this returns null 
+                Student s = em.find(Student.class, r.getId());
                 s.addCourse(c);
                 c.addStudent(s);
                 break;
@@ -171,7 +171,7 @@ public class ServerFacadeDB implements ServerFacade {
         } catch (Exception e) {
             transaction.rollback();
         }
-        return c;
+        return "Course added";
     }
 
     @Override
