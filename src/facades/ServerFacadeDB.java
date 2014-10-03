@@ -85,11 +85,13 @@ public class ServerFacadeDB implements ServerFacade {
 
     @Override
     public RoleSchool addRoleToPerson(String json, long id) throws NotFoundException, InvalidRole {
+        System.out.println("addRoleToPerson: " + json);
         Person p = em.find(Person.class, id);
         if (p == null) {
             throw new NotFoundException("No person with that id");
         }
         RoleSchool r = gson.fromJson(json, RoleSchool.class);
+        System.out.println("role school: " + r);
         RoleSchool r2 = null;
         if (r.getRoleName().equals("Student")) {
             r2 = gson.fromJson(json, Student.class);

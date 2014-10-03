@@ -1,33 +1,24 @@
-$(document).ready(function () {
-
-    fetchAll();
-    deletePerson();
-    initPersons();
-    initSaveBtn();
     
-});
-
-
 function initSaveBtn() {
-    $("#btn_save").click(function () {
+    $("#btn_add").click(function() {
         //First create post argument as a JavaScript object
         var fname = $("#fname").val();
         var lname = $("#lname").val();
         var phone = $("#phone").val();
         var email = $("#email").val();
-        if (fname === "" || lname === "" || phone === "")
+        if (fname === "" || lname === "" || phone === "" || email === "")
             return;
         var newPerson = {"firstName": fname, "lastName": lname, "phone": phone,
-                         "email": email};
+            "email": email};
         $.ajax({
             url: "../person",
             data: JSON.stringify(newPerson), //Convert newPerson to JSON
             type: "post",
             dataType: 'json',
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + ": " + textStatus);
             }
-        }).done(function (newPerson) {
+        }).done(function(newPerson) {
             $("#id").val(newPerson.id);
             fetchAll();
         });
@@ -35,7 +26,7 @@ function initSaveBtn() {
 }
 
 function initPersons() {
-    $("#persons").click(function (e) {
+    $("#persons").click(function(e) {
         var id = e.target.id;
         if (isNaN(id)) {
             return;
@@ -44,16 +35,64 @@ function initPersons() {
     });
 }
 
-function deletePerson() {
-    $("#delete").click(function () {
+function initAddRole() {
+    $("#btn_addRole").click(function(e) {
+        var personsDocument = document.getElementById("persons");
+        var selected = personsDocument.options[personsDocument.selectedIndex];
+        updateDetails(extractId(selected.id));
+        var id = $("#id").val();
+        if ($("#role").val() === "Assistant Teacher") {
+            var RoleSchool = {
+                id: 0,
+                roleName: $("#role").val()
+            };
+        }
+        if ($("#role").val() === "Teacher") {
+            var RoleSchool = {
+                id: 0,
+                roleName: $("#role").val(),
+                degree: $("#roleInput").val()
+            };
+        }
+        if ($("#role").val() === "Student") {
+            var RoleSchool = {
+                id: 0,
+                roleName: $("#role").val(),
+                semester: $("#roleInput").val()
+            };
+        }
+        var newPersonAndRole = {
+            personId: id,
+            RoleSchool: RoleSchool
+        };
         $.ajax({
-            url: "../person/" + $("#persons option:selected").attr("id"),
-            type: "DELETE",
+            url: "../role",
+            data: JSON.stringify(newPersonAndRole),
+            type: "post",
             dataType: 'json',
-            error: function (jqXHR, textStatus, errorThrown) {
+            error: function(jqXHR, textStatus, errorThrown) {
                 alert(jqXHR.responseText + ": " + textStatus);
             }
-        }).done(function () {
+        }).done(function() {
+            fetchAll();
+        });
+    });
+}
+
+function extractId(line) {
+    return line.split("_")[1];
+}
+
+function deletePerson() {
+    $("#delete").click(function() {
+        $.ajax({
+            url: "../person/" + extractId($("#persons option:selected").attr("id")),
+            type: "DELETE",
+            dataType: 'json',
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText + ": " + textStatus);
+            }
+        }).done(function() {
             fetchAll();
         });
     });
@@ -72,10 +111,10 @@ function updateDetails(id) {
         url: "../person/" + id,
         type: "GET",
         dataType: 'json',
-        error: function (jqXHR, textStatus, errorThrown) {
+        error: function(jqXHR, textStatus, errorThrown) {
             alert(jqXHR.getResonseText + ": " + textStatus);
         }
-    }).done(function (person) {
+    }).done(function(person) {
         $("#id").val(person.id);
         $("#fname").val(person.firstName);
         $("#lname").val(person.lastName);
@@ -85,21 +124,35 @@ function updateDetails(id) {
 }
 
 function fetchAll() {
+    var personsDocument = document.getElementById("persons");
+    var reselect = -1;
+    var index = 0;
     $.ajax({
         url: "../person",
         type: "GET",
         dataType: 'json',
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert(textStatus);
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(textStatus + " shit " + errorThrown);
         }
-    }).done(function (persons) {
+    }).done(function(persons) {
         var options = "";
-        persons.forEach(function (person) {
-            options += "<option id=" + person.id + ">" + person.firstName[0]
-                    + ", " + person.lastName + "</option>";
+        var selected = personsDocument.options[personsDocument.selectedIndex];
+        persons.forEach(function(person) {
+            index++;
+            options += "<option id=person_" + person.id + "> First Name: " + person.firstName
+                    + ", Last Name: " + person.lastName + ", Email: " + person.email + ", Phone: " + person.phone + "</option>";
+            if (typeof selected !== 'undefined') {
+                if (parseInt(person.id) === parseInt(extractId(selected.id))) {
+                    reselect = index;
+                }
+            }
         });
         $("#persons").html(options);
-        clearDetails();
+        if (reselect !== -1) {
+            personsDocument.selectedIndex = reselect - 1;
+        }
     });
 }
+
+
 
