@@ -3,10 +3,12 @@ package facades;
 import exceptions.NotFoundException;
 import com.google.gson.Gson;
 import entity.AssistantTeacher;
+import entity.Course;
 import entity.Person;
 import entity.RoleSchool;
 import entity.Student;
 import entity.Teacher;
+import exceptions.InvalidCourseException;
 import exceptions.InvalidRole;
 import interfaces.ServerFacade;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import java.util.Map;
 public class ServerFacadeMock implements ServerFacade {
 
     Map<Long, Person> persons = new HashMap();
+    Map<Long, Course> courses = new HashMap();
     private Long nextId;
     private Long nextRoleId;
     private final Gson gson = new Gson();
@@ -81,5 +84,45 @@ public class ServerFacadeMock implements ServerFacade {
             throw new NotFoundException("No person exists for the given id");
         }
         return p;
+    }
+
+    @Override
+    public Course addCourse(String json) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getCourses() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String addPersonToCourse(long courseId, long personId, long roleSchoolId, String roleName) throws NotFoundException, InvalidCourseException, InvalidRole {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getRole(long personId, String roleName) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getRoles(long personId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getStudentsInCourse(long courseId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getAssistantTeachersInCourse(long courseId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getTeachersInCourse(long courseId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

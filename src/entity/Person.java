@@ -2,7 +2,11 @@ package entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -25,32 +29,44 @@ public class Person implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(length = 50, nullable = false)
     private String firstName;
+    
+    @Column(length = 50, nullable = false)
     private String lastName;
+    
+    @Column(length = 50, nullable = false)
     private String phone;
+    
+    @Column(length = 50, nullable = false)
     private String email;
 
     @OneToMany
-    private List<RoleSchool> roles;
+    private Map<String, RoleSchool> roles;
+    
+    public RoleSchool getRole(String roleName) {
+        return roles.containsKey(roleName) ? roles.get(roleName) : null;
+    }
 
-    public List<RoleSchool> getRoles() {
+    public Map<String, RoleSchool> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<RoleSchool> roles) {
+    public void setRoles(Map<String, RoleSchool> roles) {
         this.roles = roles;
     }
 
     public void addRole(RoleSchool role) {
-        roles.add(role);
+        if(roles == null) {
+            roles = new HashMap();
+        }
+        roles.put(role.getRoleName(), role);
     }
 
     public Person() {
-        roles = new ArrayList<>();
     }
 
     public Person(String firstName, String lastName, String phone, String email) {
-        roles = new ArrayList<>();
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;

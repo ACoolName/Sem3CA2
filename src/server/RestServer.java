@@ -254,7 +254,19 @@ public class RestServer {
             String method = he.getRequestMethod().toUpperCase();
             switch (method) {
                 case "GET":
-                    break;
+            {
+                try {
+                    response = handleGet(he);
+                }  catch (NumberFormatException nfe) {
+                        response = "Id is not a number";
+                        status = 404;
+                    } catch (NotFoundException nfe) {
+                        System.out.println("NotFound thrown");
+                        response = nfe.getMessage();
+                        status = 404;
+                    }
+                break;
+            }
                 case "POST":
                     try {
                         response = handlePost(he);
@@ -297,6 +309,21 @@ public class RestServer {
             response = gson.toJson(role, RoleSchool.class);
             return response;
         }
+        
+         private String handleGet(HttpExchange he) throws NotFoundException {
+            String response = "";
+            String path = he.getRequestURI().getPath();
+            int lastIndex = path.lastIndexOf("/");
+            if (lastIndex > 0) {  
+                String idStr = path.substring(lastIndex + 1);
+                int id = Integer.parseInt(idStr);
+                //response = facade.getRole(port, response);
+            } else { 
+               //
+            }
+            return response;
+        }
+        
     }
 
 }
